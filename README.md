@@ -1,2 +1,0 @@
-# NurunuruLiveStudio
-unacastと連携してコメントを受け取って画面に画像を出したりするためのツール
