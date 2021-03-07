@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.IO;
-
+using Unage;
 
 /**
  * 参考：
@@ -16,6 +16,7 @@ using System.IO;
  * https://blog.applibot.co.jp/2018/08/13/socket-communication-with-unity/
  * 
  */
+
 
 
 public class TestTCPServer : MonoBehaviour
@@ -36,18 +37,30 @@ public class TestTCPServer : MonoBehaviour
     //棒読みちゃん転送用クライアント
     private TcpClient sendClient;
 
-    // ソケット接続準備、待機
+    //スパチャコントローラー
+    [SerializeField]
+    private GameObject _SuperChatManager;
+    private SuperChatManager Supacha;
+
+
     void Start()
     {
+        Supacha = _SuperChatManager.GetComponent<SuperChatManager>();
+        StartServer();
+    }
 
+    // ソケット接続準備、待機
+    public void StartServer()
+    {
+        // TCPリスナー設定
         var ip = IPAddress.Parse(MY_IP_ADDRESS);
         myListener = new TcpListener(ip, myPortNumber);
         myListener.Start();
 
         //コールバック設定　第二引数はコールバック関数に渡される。
         myListener.BeginAcceptSocket(DoAcceptTcpClientCallback, myListener);
-        
     }
+
 
     //クライアントからの接続処理
     private void DoAcceptTcpClientCallback(IAsyncResult ar)
@@ -90,6 +103,12 @@ public class TestTCPServer : MonoBehaviour
             bs.CopyTo(sendByte, header.Length);
             //棒読みちゃんへ送信
             sendMessage(sendByte);
+
+            //
+            //その他いろいろな処理
+            Supacha.Hogehoge(System.Text.Encoding.UTF8.GetString(bs));
+
+
 
 
             // クライアントの接続が切れたら
