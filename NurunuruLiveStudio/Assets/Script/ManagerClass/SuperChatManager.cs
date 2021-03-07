@@ -14,12 +14,16 @@ namespace Unage//←パッケージ的なもの
     /// </summary>
     public class SuperChatManager : MonoBehaviour
     {
+        [SerializeField]
+        private GameObject _SettingData;
+        private SettingData data;
 
         private EventManager _event;
 
         void Start()
         {
             _event = this.gameObject.GetComponent<EventManager>();
+            data = _SettingData.GetComponent<SettingData>();
         }
 
 
@@ -33,13 +37,19 @@ namespace Unage//←パッケージ的なもの
         /// <returns></returns>
         public PayedMoney Hogehoge(string message)
         {
-            decimal homo = ExtractionMoney(message);
-            Debug.Log(homo.ToString());
+            decimal amount = ExtractionMoney(message);
+            Debug.Log(amount.ToString());
 
+            //テスト用、この辺は後で直す
             try
             {
-                _event.enqueEvent("drink1");
-            }catch(Exception e)
+                //todo:ここで呼び出すのではなく上の階層から呼ぶべき、そのうち直す
+                string evName = getEventName(amount);
+                _event.enqueEvent(evName);
+
+                //                _event.enqueEvent("drink2");
+            }
+            catch(Exception e)
             {
                 Debug.Log(e);
             }
@@ -50,7 +60,12 @@ namespace Unage//←パッケージ的なもの
 
         }
 
-
+        /// <summary>
+        /// コメントに含まれる金額を抽出する
+        /// todo:同じような処理で＄の分もそのうち作る
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         private decimal ExtractionMoney (string message)
         {
             // \ から始まる数値を抜き出す、小数点はいったん忘れる
@@ -75,6 +90,24 @@ namespace Unage//←パッケージ的なもの
 
             //変換失敗したら0を返す
             return new decimal(0);
+        }
+
+        /// <summary>
+        /// 金額
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public String getEventName(decimal amount)
+        {
+            foreach (SpachaData spa in data.SpachaDatas)
+            {
+                //入力された金額が設定情報の金額よりも大きい場合、設定されたイベント名を返す
+                if(decimal.Compare(amount, spa.Amount) > 0)
+                {
+                    return spa.EventName;
+                }
+            }
+            return "";
         }
 
     }

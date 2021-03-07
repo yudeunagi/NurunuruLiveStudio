@@ -127,8 +127,11 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
     {
         //座標表示
         //        Debug.Log("x;" + transform.position.x + ", y;" + transform.position.y);
-        //一定時間後に破壊する
-        Destroy(gameObject, _lifeTime);
+        //設定した時間経過後にコライダーを破棄
+        Destroy(GetComponent<CapsuleCollider2D>(), _lifeTime);
+        //設定した時間経過 * 2 後にオブジェクトを破棄
+        Destroy(gameObject, _lifeTime * 2.0f);
+
     }
 
     void Update()
