@@ -101,8 +101,8 @@ namespace Unage//←パッケージ的なもの
         {
             foreach (SpachaData spa in data.SpachaDatas)
             {
-                //入力された金額が設定情報の金額よりも大きい場合、設定されたイベント名を返す
-                if(decimal.Compare(amount, spa.Amount) > 0)
+                //入力された金額が設定情報の金額以上の場合、設定されたイベント名を返す
+                if(decimal.Compare(amount, spa.Amount) >= 0)
                 {
                     return spa.EventName;
                 }
