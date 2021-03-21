@@ -217,6 +217,66 @@ namespace Unage
             return eventn;
         }
 
+        /// <summary>
+        /// よっちゃん
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent12()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 12;
+            eventn.Name = "yocchan";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.4"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add(""); //Y位置
+            paramn.Add(""); //回転
+            paramn.Add("0"); //X移動量
+            paramn.Add("0"); //Y移動量
+
+            ActionData action = createDummyAction(12, ActionType.Prefeb, PrefabType.MoveSprite, "F:/picture/素材/nurusta/Yocchan.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        static public EventData getDummyEvent13()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 13;
+            eventn.Name = "50yen";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.45");
+            paramn.Add("");
+            paramn.Add("1.2");
+
+            ActionData action = createDummyAction(13, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/money_50.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        static public EventData getDummyEvent14()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 14;
+            eventn.Name = "100yen";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.45");
+            paramn.Add("");
+            paramn.Add("1.2");
+
+            ActionData action = createDummyAction(14, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/money_100.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
 
         /// <summary>
         /// ダミーデータ作成
@@ -247,7 +307,25 @@ namespace Unage
             spa.EventName = "onigiri";
             SpachaDatas.Add(spa);
 
-            //サンプルデータ4
+            //50：50円玉
+            spa = new SpachaData();
+            spa.Amount = new decimal(50);
+            spa.EventName = "50yen";
+            SpachaDatas.Add(spa);
+
+            //51:おにぎり
+            spa = new SpachaData();
+            spa.Amount = new decimal(51);
+            spa.EventName = "onigiri";
+            SpachaDatas.Add(spa);
+
+            //53:じょうず星人
+            spa = new SpachaData();
+            spa.Amount = new decimal(53);
+            spa.EventName = "jouzu";
+            SpachaDatas.Add(spa);
+
+            //おにぎり
             spa = new SpachaData();
             spa.Amount = new decimal(54);
             spa.EventName = "onigiri";
@@ -259,15 +337,15 @@ namespace Unage
             spa.EventName = "bone";
             SpachaDatas.Add(spa);
 
-            //サンプルデータ3
+            //100円だま
             spa = new SpachaData();
-            spa.Amount = new decimal(53);
-            spa.EventName = "jouzu";
+            spa.Amount = new decimal(100);
+            spa.EventName = "100yen";
             SpachaDatas.Add(spa);
 
             //サンプルデータ5
             spa = new SpachaData();
-            spa.Amount = new decimal(100);
+            spa.Amount = new decimal(101);
             spa.EventName = "ocha";
             SpachaDatas.Add(spa);
 
@@ -318,6 +396,13 @@ namespace Unage
             TriggerData tri = new TriggerData();
             tri.Word = "草";
             tri.EventName = "kusa";
+            tri.Findtype = TriggerData.FINDTYPE.Partial;
+            triggerDatas.Add(tri);
+
+            //サンプルデータ2 よっちゃん
+            tri = new TriggerData();
+            tri.Word = "よっちゃん";
+            tri.EventName = "yocchan";
             tri.Findtype = TriggerData.FINDTYPE.Partial;
             triggerDatas.Add(tri);
 

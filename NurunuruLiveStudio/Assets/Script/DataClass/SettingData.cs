@@ -103,6 +103,19 @@ public class SettingData : MonoBehaviour
         //イベント11 草
         EventData event11 = DummyData.getDummyEvent11();
         _eventDatas.Add(event11.Name, event11);
+
+        //イベント12 よっちゃん
+        EventData event12 = DummyData.getDummyEvent12();
+        _eventDatas.Add(event12.Name, event12);
+
+        //イベント13 50円
+        EventData event13 = DummyData.getDummyEvent13();
+        _eventDatas.Add(event13.Name, event13);
+
+        //イベント14 100円
+        EventData event14 = DummyData.getDummyEvent14();
+        _eventDatas.Add(event14.Name, event14);
+
         Debug.Log("mockset完了");
 
     }

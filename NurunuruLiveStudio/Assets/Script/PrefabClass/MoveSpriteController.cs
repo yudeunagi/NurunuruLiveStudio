@@ -105,7 +105,7 @@ public class MoveSpriteController : MonoBehaviour, PrefabBase
         float camSize = 4.50f;
 
         //基準値
-        float scale = 0.8f;
+        float scale = 0.7f;
 
         // x が未入力ならランダム
         if (!float.TryParse(x, out fx))
