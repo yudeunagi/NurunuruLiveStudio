@@ -14,10 +14,12 @@ namespace Unage//←パッケージ的なもの
     /// </summary>
     public class SuperChatManager : MonoBehaviour
     {
+        // 設定情報
         [SerializeField]
         private GameObject _SettingData;
         private SettingData data;
 
+        // イベント実行クラス
         private EventManager _event;
 
         void Start()
@@ -30,33 +32,35 @@ namespace Unage//←パッケージ的なもの
         /// <summary>
         ///
         /// コメント本文を受け取って金額が含まれているか判定する
-        /// 戻り値 0:なし ,1以降の数値:金額ランク、
         /// 
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public PayedMoney Hogehoge(string message)
+        /// <param name="message">コメント本文</param>
+        /// <returns>金額</returns>
+        public PayedMoney getAmount(string message)
         {
+            // 金額抽出
             decimal amount = ExtractionMoney(message);
             Debug.Log(amount.ToString());
 
-            //テスト用、この辺は後で直す
             try
             {
-                //todo:ここで呼び出すのではなく上の階層から呼ぶべき、そのうち直す
+                // memo:ここで呼び出すのではなく上の階層から呼び出す方が良いか？
+                // 金額からイベント取得
                 string evName = getEventName(amount);
+                // イベント予約
                 _event.enqueEvent(evName);
 
-                //                _event.enqueEvent("drink2");
             }
             catch(Exception e)
             {
                 Debug.Log(e);
             }
 
+            //金額を返却
+            PayedMoney result = new PayedMoney();
+            result.AMOUNT = amount;
 
-
-            return new PayedMoney();
+            return result;
 
         }
 
@@ -69,7 +73,7 @@ namespace Unage//←パッケージ的なもの
         private decimal ExtractionMoney (string message)
         {
             // \ から始まる数値を抜き出す、小数点はいったん忘れる
-            var reg = new Regex("[￥\\\\][0-9０-９,]+");
+            var reg = new Regex("[￥¥\\\\][0-9０-９,]+");
             Match m = reg.Match(message);
 
             string s = m.Value;

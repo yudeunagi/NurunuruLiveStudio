@@ -2,21 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FallSpriteController : MonoBehaviour, PrefabBase
+public class MoveSpriteController : MonoBehaviour, PrefabBase
 {
     private string[] _param = new string[7];
 
     // 生存時間
     private float _lifeTime;
-    
+
+    //移動方向X
+    private float moveX = 0;
+
+    //移動方向Y
+    private float moveY = 0;
+
     /// <summary>
     /// 0:ライフタイム（未設定の場合5）
     /// 1:サイズ（未設定の場合1）
     /// 2:座標X（未設定の場合ランダム）
     /// 3:座標Y（未設定の場合ランダム）
     /// 4:回転（未設定の場合ランダムか0）
-    /// 5:加速度方向（未設定の場合0）
-    /// 6:加速度（未設定の場合0）
+    /// 5:移動速度X（未設定の場合0）
+    /// 6:移動速度Y（未設定の場合0）
     /// 
     /// 
     /// </summary>
@@ -24,7 +30,7 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
     public void SetParameters(List<string> parameters)
     {
         int i = 0;
-        foreach(string param in parameters)
+        foreach (string param in parameters)
         {
             _param[i] = param;
             i++;
@@ -36,8 +42,11 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
         SetScale(_param[1]);
         //座標セット
         SetPosition(_param[2], _param[3]);
+        //回転角度セット
 
-//        throw new System.NotImplementedException();
+        //移動量セット
+        SetMovement(_param[5], _param[6]);
+
     }
 
     /// <summary>
@@ -95,17 +104,20 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
         //カメラサイズ（本来ならカメラコンポーネントのsizeをちゃんと取ってくるべきだけどめんどいので直で書く）
         float camSize = 4.50f;
 
+        //基準値
+        float scale = 0.8f;
+
         // x が未入力ならランダム
         if (!float.TryParse(x, out fx))
         {
             // Screen.widthで画面のサイズを上限、下限値にする
-            fx = Random.Range(-1.0f, 1.0f);
+            fx = Random.Range(scale * -1.0f, scale);
         }
 
         // y が未入力ならランダム
         if (!float.TryParse(y, out fy))
         {
-            fy = Random.Range(-1.0f, 1.0f);
+            fy = Random.Range(scale * -1.0f, scale);
         }
 
         //座標セット
@@ -114,26 +126,41 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
 
     }
 
-    void Start()
+    /// <summary>
+    /// 移動量セット
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    private void SetMovement(string x, string y)
     {
-        //座標表示
-        //        Debug.Log("x;" + transform.position.x + ", y;" + transform.position.y);
-        //設定した時間経過後にコライダーを破棄
-        Destroy(GetComponent<CapsuleCollider2D>(), _lifeTime);
-        //設定した時間経過 * 2 後にオブジェクトを破棄
-        Destroy(gameObject, _lifeTime * 2.0f);
+        Debug.Log(x);
+        Debug.Log(y);
 
+        // xが未入力 or Floatに変換できなかったら0を設定
+        float fx;
+        if (float.TryParse(x, out fx))
+        {
+            moveX = fx;
+        }
+        // yが未入力 or Floatに変換できなかったら0を設定
+        float fy;
+        if (float.TryParse(y, out fy))
+        {
+            moveY = fy;
+        }
     }
 
-    void Update()
+    void Start()
     {
-        //オブジェクト座標が0以下＆画面外に出たら削除
-        /*
-        if (transform.position.y < 0 && !GetComponent<Renderer>().isVisible)
-        {
-            Destroy(this.gameObject);
-        }
-        */
+        //設定した時間経過後にオブジェクトを破棄
+        Destroy(gameObject, _lifeTime);
+    }
 
+
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        this.transform.Translate(moveX, moveY, 0);
     }
 }

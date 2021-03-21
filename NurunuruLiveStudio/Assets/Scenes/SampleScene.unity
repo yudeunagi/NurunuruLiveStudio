@@ -155,7 +155,7 @@ MonoBehaviour:
   MY_IP_ADDRESS: 127.0.0.1
   myPortNumber: 50002
   sendPortNumber: 50001
-  _SuperChatManager: {fileID: 978225280}
+  _Managers: {fileID: 978225280}
 --- !u!4 &49614733
 Transform:
   m_ObjectHideFlags: 0
@@ -324,6 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 549e462667316f14fa557f2d5b6a5387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _SettingData: {fileID: 1944068716}
 --- !u!1 &1040643145 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5924389543219343639, guid: d26bfaf477566a34b83515668cf6efce, type: 3}
@@ -812,6 +813,63 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &5906859347717482087
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.79
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648720, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423940400095648725, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
+      propertyPath: m_Name
+      value: MoveSprite
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1aae5533a14e79145ba90c14528f6078, type: 3}
 --- !u!1001 &5924389543387481438
 PrefabInstance:
   m_ObjectHideFlags: 0

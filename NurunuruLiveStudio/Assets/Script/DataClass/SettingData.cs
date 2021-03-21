@@ -9,11 +9,14 @@ using static Unage.ActionData;
 /// </summary>
 public class SettingData : MonoBehaviour
 {
-    //トリガーに関するデータ
-//    private List<TriggerData> triggerDatas;
-
     //イベントに関するデータ
-    private Dictionary<string,EventData> _eventDatas = new Dictionary<string, EventData>();
+    private Dictionary<string, EventData> _eventDatas = new Dictionary<string, EventData>();
+
+    //トリガーに関するデータ
+    private List<TriggerData> _triggerDatas = new List<TriggerData>();
+
+    //スパチャ金額に関するデータ
+    private List<SpachaData> _spachaDatas = new List<SpachaData>();
 
     //以下アクセサ
     public Dictionary<string, EventData> EventDatas
@@ -22,15 +25,18 @@ public class SettingData : MonoBehaviour
         set { _eventDatas = value; }
     }
 
-    //スパチャ金額に関するデータ
-    private List<SpachaData> _spachaDatas = new List<SpachaData>();
+    public List<TriggerData> TriggerDatas
+    {
+        get { return _triggerDatas; }
+        set { _triggerDatas = value; }
+    }
 
-    //以下アクセサ
     public List<SpachaData> SpachaDatas
     {
         get { return _spachaDatas; }
         set { _spachaDatas = value; }
     }
+
 
 
     /// <summary>
@@ -93,6 +99,10 @@ public class SettingData : MonoBehaviour
         //イベント10 おすし
         EventData event10 = DummyData.getDummyEvent10();
         _eventDatas.Add(event10.Name, event10);
+
+        //イベント11 草
+        EventData event11 = DummyData.getDummyEvent11();
+        _eventDatas.Add(event11.Name, event11);
         Debug.Log("mockset完了");
 
     }
@@ -109,6 +119,11 @@ public class SettingData : MonoBehaviour
         DummyData.LoadMockSpachaData(SpachaDatas);
     }
 
+    public void LoadMockTriggerData()
+    {
+        DummyData.LoadMockTriggerData(TriggerDatas);
+    }
+
     /// <summary>
     /// 開始時に保存した各種設定を読み込む
     /// </summary>
@@ -118,6 +133,7 @@ public class SettingData : MonoBehaviour
 
         LoadMockEventData();
         LoadMockSpachaData();
+        LoadMockTriggerData();
     }
 
 }

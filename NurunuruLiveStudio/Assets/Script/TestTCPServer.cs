@@ -37,15 +37,20 @@ public class TestTCPServer : MonoBehaviour
     //棒読みちゃん転送用クライアント
     private TcpClient sendClient;
 
-    //スパチャコントローラー
+    //マネージャクラス包括オブジェクト
     [SerializeField]
-    private GameObject _SuperChatManager;
-    private SuperChatManager Supacha;
+    private GameObject _Managers;
 
+    //スパチャマネージャ
+    private SuperChatManager supacha;
+
+    //トリガーマネージャ
+    private TriggerManager trigger;
 
     void Start()
     {
-        Supacha = _SuperChatManager.GetComponent<SuperChatManager>();
+        supacha = _Managers.GetComponent<SuperChatManager>();
+        trigger = _Managers.GetComponent<TriggerManager>();
         StartServer();
     }
 
@@ -62,7 +67,10 @@ public class TestTCPServer : MonoBehaviour
     }
 
 
-    //クライアントからの接続処理
+    /// <summary>
+    /// クライアントからの接続処理
+    /// </summary>
+    /// <param name="ar"></param>
     private void DoAcceptTcpClientCallback(IAsyncResult ar)
     {
 
@@ -104,11 +112,14 @@ public class TestTCPServer : MonoBehaviour
             //棒読みちゃんへ送信
             sendMessage(sendByte);
 
-            //
+            //本文取得
+            string message = System.Text.Encoding.UTF8.GetString(bs);
             //その他いろいろな処理
-            Supacha.Hogehoge(System.Text.Encoding.UTF8.GetString(bs));
 
-
+            // 金額からイベント起動
+            PayedMoney money = supacha.getAmount(message);
+            // 単語からイベント起動
+            trigger.Trigger(message);
 
 
             // クライアントの接続が切れたら
@@ -126,7 +137,9 @@ public class TestTCPServer : MonoBehaviour
 
     }
 
-    // 終了処理
+    /// <summary>
+    ///  終了処理
+    /// </summary>
     protected virtual void OnApplicationQuit()
     {
         if (myListener != null) myListener.Stop();

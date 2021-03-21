@@ -25,8 +25,9 @@ namespace Unage
         /// これも専用クラスに持たせるべきじゃ？
         public enum PrefabType
         {
-            FallSprite
-            , Prefeb
+            FallSprite    //落下
+            , MoveSprite  //移動
+            , PopupSprite //ポップアップ
         }
 
         //アクション番号
@@ -38,12 +39,15 @@ namespace Unage
         private ActionType type;
 
         //画像、効果音のパス
+        [SerializeField]
         private string path;
 
         //プレハブ名
+        [SerializeField]
         private PrefabType name;
 
         //パラメータ
+        [SerializeField]
         private List<string> parameters = new List<string>();
 
 

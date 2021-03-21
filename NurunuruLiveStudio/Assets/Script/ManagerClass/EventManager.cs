@@ -26,14 +26,32 @@ namespace Unage
 
         private Queue<string> eventQue = new Queue<string>();
 
+        /// <summary>
+        /// 設定（イベント設定やトリガー設定など）に関するコンポーネントを取得する
+        /// </summary>
         private void Start()
         {
             data = _SettingData.GetComponent<SettingData>();
         }
 
+        /// <summary>
+        /// イベント予約追加
+        /// 指定されたイベントを予約キューへ追加する。
+        /// このメソッドは外部のトリガークラスから呼び出して使う。
+        /// </summary>
+        /// <param name="eventName"></param>
+        public void enqueEvent(string eventName)
+        {
+            eventQue.Enqueue(eventName);
+        }
+
+        /// <summary>
+        /// Updateメソッド<br/>
+        /// 予約キューにイベントがある場合イベントを実行する
+        /// </summary>
         private void Update()
         {
-            if(eventQue.Count == 0)
+            if (eventQue.Count == 0)
             {
                 return;
             }
@@ -45,15 +63,11 @@ namespace Unage
         }
 
         /// <summary>
-        /// イベント予約追加
+        /// イベント実行<br/>
+        /// イベントデータリスト内に引数で渡されたイベント名が存在する場合、そのイベントを実行する。
         /// </summary>
         /// <param name="eventName"></param>
-        public void enqueEvent(string eventName)
-        {
-            eventQue.Enqueue(eventName);
-        }
-
-        public void InvokeEvent(string eventName)
+        private void InvokeEvent(string eventName)
         {
             //イベント名からイベントを取得できなかった場合終了
             EventData ev;
@@ -67,19 +81,24 @@ namespace Unage
             {
                 switch(act.Type)
                 {
+                    //サウンド実行
                     case ActionData.ActionType.Sound:
                         PlaySound(act);
                         break;
 
+                    //プレハブ生成実行
                     case ActionData.ActionType.Prefeb:
                         CreateObject(act);
                         break;
 
                 }
             }
-            
         }
 
+        /// <summary>
+        /// サウンドを鳴らす
+        /// </summary>
+        /// <param name="data"></param>
         private void PlaySound(ActionData data)
         {
 
@@ -139,9 +158,6 @@ namespace Unage
         {
             //memo:パス指定が上手くいかなかった（先頭にunityのパスが付与されてしまう）ため書式が間違っていると思い、正しい書式を確認するためファイル読み込み処理を入れてみた。
             //           var patht = EditorUtility.OpenFilePanel("Open png", "", "png");
-
-            //memo:テスト用の記述、先頭の@は何の意味？＿
-            //string ppth = @"F:/picture/prprLive/image/dousite.png";
 
             //memo: なんか File.ReadAllBytes(ppth) だと読み込みはするがテクスチャが表示されない
             // byte[] readBinary = File.ReadAllBytes(ppth);

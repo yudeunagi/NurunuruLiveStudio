@@ -188,7 +188,35 @@ namespace Unage
 
             return eventn;
         }
-        
+
+        /// <summary>
+        /// ダミー11 草
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent11()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 11;
+            eventn.Name = "kusa";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.8"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("-0.85"); //Y位置
+            paramn.Add(""); //回転
+            paramn.Add("0"); //X移動量
+            paramn.Add("0"); //Y移動量
+
+            ActionData action = createDummyAction(11, ActionType.Prefeb, PrefabType.MoveSprite, "F:/picture/素材/nurusta/baran.png", paramn);
+
+            eventn.Actions.Add(action);
+            eventn.Actions.Add(action);
+            eventn.Actions.Add(action);
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
 
         /// <summary>
         /// ダミーデータ作成
@@ -282,6 +310,17 @@ namespace Unage
             //金額の大きい順にソートする
             SpachaDatas.Sort((a, b) => decimal.Compare(b.Amount, a.Amount));
             Debug.Log(SpachaDatas);
+        }
+
+        public static void LoadMockTriggerData(List<TriggerData> triggerDatas)
+        {
+            //サンプルデータ1 草
+            TriggerData tri = new TriggerData();
+            tri.Word = "草";
+            tri.EventName = "kusa";
+            tri.Findtype = TriggerData.FINDTYPE.Partial;
+            triggerDatas.Add(tri);
+
         }
     }
 }
