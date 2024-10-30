@@ -279,6 +279,276 @@ namespace Unage
         }
 
         /// <summary>
+        /// ぷいにゅー
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent15()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 15;
+            eventn.Name = "puinyu";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.4"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add(""); //Y位置
+            paramn.Add(""); //回転
+            paramn.Add("0"); //X移動量
+            paramn.Add("0"); //Y移動量
+
+            ActionData action = createDummyAction(15, ActionType.Prefeb, PrefabType.MoveSprite, "F:/picture/素材/nurusta/puinyu.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// にゃんぱすー
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent16()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 16;
+            eventn.Name = "nyanpasu";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.4"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add(""); //Y位置
+            paramn.Add(""); //回転
+            paramn.Add("0"); //X移動量
+            paramn.Add("0"); //Y移動量
+
+            ActionData action = createDummyAction(16, ActionType.Prefeb, PrefabType.MoveSprite, "F:/picture/素材/nurusta/nyanpasu.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// 黒板消し
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent17()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 17;
+            eventn.Name = "kokuban";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.5"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(17, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/kokubankeshi.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// タライ
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent18()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 18;
+            eventn.Name = "tarai";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("1.0"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(18, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/tarai.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// 壺
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent19()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 19;
+            eventn.Name = "tsubo";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.6"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(19, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/tsubo.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// モンスターボール
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent20()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 20;
+            eventn.Name = "pokeball";
+            List<string> paramn = new List<string>();
+            paramn.Add("5");
+            paramn.Add("0.25"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(20, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/pokeball.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// みがわり
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent21()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 21;
+            eventn.Name = "migawari";
+            List<string> paramn = new List<string>();
+            paramn.Add("4");
+            paramn.Add("0.5"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(21, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/migawari.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// ペカコイン1
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent22()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 22;
+            eventn.Name = "pecacoin1";
+            List<string> paramn = new List<string>();
+            paramn.Add("4");
+            paramn.Add("0.8"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(22, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/pecacoin1.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// ペカコイン100
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent23()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 23;
+            eventn.Name = "pecacoin100";
+            List<string> paramn = new List<string>();
+            paramn.Add("4");
+            paramn.Add("0.8"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(23, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/pecacoin100.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// お団子
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent24()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 24;
+            eventn.Name = "dango";
+            List<string> paramn = new List<string>();
+            paramn.Add("4");
+            paramn.Add("0.6"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(24, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/dango.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// ハンバーガー
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent25()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 25;
+            eventn.Name = "hamburger";
+            List<string> paramn = new List<string>();
+            paramn.Add("4");
+            paramn.Add("0.45"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(25, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/hamburger.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
+        /// うな丼
+        /// </summary>
+        /// <returns></returns>
+        static public EventData getDummyEvent26()
+        {
+            EventData eventn = new EventData();
+            eventn.ID = 26;
+            eventn.Name = "unadon";
+            List<string> paramn = new List<string>();
+            paramn.Add("4");
+            paramn.Add("1.50"); //サイズ
+            paramn.Add(""); //X位置
+            paramn.Add("1.2"); //Y位置
+
+            ActionData action = createDummyAction(26, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/unadon.png", paramn);
+
+            eventn.Actions.Add(action);
+
+            return eventn;
+        }
+
+        /// <summary>
         /// ダミーデータ作成
         /// </summary>
         /// <param name="id"></param>
@@ -301,23 +571,30 @@ namespace Unage
 
         public static void LoadMockSpachaData(List<SpachaData> SpachaDatas)
         {
-            //サンプルデータ2
+            //11:おにぎり
             SpachaData spa = new SpachaData();
             spa.Amount = new decimal(10);
             spa.EventName = "onigiri";
             SpachaDatas.Add(spa);
 
-            //50：50円玉
+            //ほね
             spa = new SpachaData();
-            spa.Amount = new decimal(50);
-            spa.EventName = "50yen";
+            spa.Amount = new decimal(2);
+            spa.EventName = "bone";
             SpachaDatas.Add(spa);
 
-            //51:おにぎり
+            //ペカコイン1
             spa = new SpachaData();
-            spa.Amount = new decimal(51);
-            spa.EventName = "onigiri";
+            spa.Amount = new decimal(1);
+            spa.EventName = "pecacoin1";
             SpachaDatas.Add(spa);
+
+            //おだんご
+            spa = new SpachaData();
+            spa.Amount = new decimal(50);
+            spa.EventName = "dango";
+            SpachaDatas.Add(spa);
+
 
             //53:じょうず星人
             spa = new SpachaData();
@@ -325,43 +602,31 @@ namespace Unage
             spa.EventName = "jouzu";
             SpachaDatas.Add(spa);
 
-            //おにぎり
+            //おだんご
             spa = new SpachaData();
             spa.Amount = new decimal(54);
-            spa.EventName = "onigiri";
+            spa.EventName = "dango";
             SpachaDatas.Add(spa);
 
-            //サンプルデータ1
-            spa = new SpachaData();
-            spa.Amount = new decimal(1);
-            spa.EventName = "bone";
-            SpachaDatas.Add(spa);
-
-            //100円だま
+            //おちゃ
             spa = new SpachaData();
             spa.Amount = new decimal(100);
-            spa.EventName = "100yen";
-            SpachaDatas.Add(spa);
-
-            //サンプルデータ5
-            spa = new SpachaData();
-            spa.Amount = new decimal(101);
             spa.EventName = "ocha";
             SpachaDatas.Add(spa);
 
-            //サンプルデータ6
+            //おちゃｘ３
             spa = new SpachaData();
             spa.Amount = new decimal(300);
             spa.EventName = "ocha3";
             SpachaDatas.Add(spa);
 
-            //サンプルデータ7
+            //バーガー
             spa = new SpachaData();
             spa.Amount = new decimal(500);
-            spa.EventName = "hanataba";
+            spa.EventName = "hamburger";
             SpachaDatas.Add(spa);
 
-            //サンプルデータ8
+            //とりにく
             spa = new SpachaData();
             spa.Amount = new decimal(1000);
             spa.EventName = "chiken";
@@ -377,6 +642,12 @@ namespace Unage
             spa = new SpachaData();
             spa.Amount = new decimal(3000);
             spa.EventName = "cake";
+            SpachaDatas.Add(spa);
+
+            //うな丼
+            spa = new SpachaData();
+            spa.Amount = new decimal(4000);
+            spa.EventName = "unadon";
             SpachaDatas.Add(spa);
 
             //サンプルデータ10
@@ -406,6 +677,19 @@ namespace Unage
             tri.Findtype = TriggerData.FINDTYPE.Partial;
             triggerDatas.Add(tri);
 
+            //サンプルデータ3 ぷいにゅー
+            tri = new TriggerData();
+            tri.Word = "ぷいにゅ";
+            tri.EventName = "puinyu";
+            tri.Findtype = TriggerData.FINDTYPE.Partial;
+            triggerDatas.Add(tri);
+
+            //サンプルデータ4 にゃんぱすー
+            tri = new TriggerData();
+            tri.Word = "にゃんぱす";
+            tri.EventName = "nyanpasu";
+            tri.Findtype = TriggerData.FINDTYPE.Partial;
+            triggerDatas.Add(tri);
         }
     }
 }
