@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.IO;
-
+using Unage;
 
 /**
  * 参考：
@@ -16,6 +16,7 @@ using System.IO;
  * https://blog.applibot.co.jp/2018/08/13/socket-communication-with-unity/
  * 
  */
+
 
 
 public class TestTCPServer : MonoBehaviour
@@ -36,20 +37,40 @@ public class TestTCPServer : MonoBehaviour
     //棒読みちゃん転送用クライアント
     private TcpClient sendClient;
 
-    // ソケット接続準備、待機
+    //マネージャクラス包括オブジェクト
+    [SerializeField]
+    private GameObject _Managers;
+
+    //スパチャマネージャ
+    private SuperChatManager supacha;
+
+    //トリガーマネージャ
+    private TriggerManager trigger;
+
     void Start()
     {
+        supacha = _Managers.GetComponent<SuperChatManager>();
+        trigger = _Managers.GetComponent<TriggerManager>();
+        StartServer();
+    }
 
+    // ソケット接続準備、待機
+    public void StartServer()
+    {
+        // TCPリスナー設定
         var ip = IPAddress.Parse(MY_IP_ADDRESS);
         myListener = new TcpListener(ip, myPortNumber);
         myListener.Start();
 
         //コールバック設定　第二引数はコールバック関数に渡される。
         myListener.BeginAcceptSocket(DoAcceptTcpClientCallback, myListener);
-        
     }
 
-    //クライアントからの接続処理
+
+    /// <summary>
+    /// クライアントからの接続処理
+    /// </summary>
+    /// <param name="ar"></param>
     private void DoAcceptTcpClientCallback(IAsyncResult ar)
     {
 
@@ -91,6 +112,15 @@ public class TestTCPServer : MonoBehaviour
             //棒読みちゃんへ送信
             sendMessage(sendByte);
 
+            //本文取得
+            string message = System.Text.Encoding.UTF8.GetString(bs);
+            //その他いろいろな処理
+
+            // 金額からイベント起動
+            PayedMoney money = supacha.getAmount(message);
+            // 単語からイベント起動
+            trigger.Trigger(message);
+
 
             // クライアントの接続が切れたら
             if (myClient.Client.Poll(1000, SelectMode.SelectRead) && (myClient.Client.Available == 0))
@@ -107,7 +137,9 @@ public class TestTCPServer : MonoBehaviour
 
     }
 
-    // 終了処理
+    /// <summary>
+    ///  終了処理
+    /// </summary>
     protected virtual void OnApplicationQuit()
     {
         if (myListener != null) myListener.Stop();
