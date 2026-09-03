@@ -116,7 +116,7 @@ namespace Unage
         private void CreateObject(ActionData data)
         {
             //プレハブ名を取得
-            string prefName = data.Name.ToString();
+            string prefName = data.PrefabName.ToString();
 
             //プレハブを生成
             GameObject prefab = (GameObject)Resources.Load("Prefabs/" + prefName);

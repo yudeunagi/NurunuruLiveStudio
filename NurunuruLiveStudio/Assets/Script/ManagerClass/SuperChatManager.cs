@@ -35,33 +35,15 @@ namespace Unage//←パッケージ的なもの
         /// 
         /// </summary>
         /// <param name="message">コメント本文</param>
-        /// <returns>金額</returns>
-        public PayedMoney getAmount(string message)
+        /// <returns>イベント名</returns>
+        public String getAmount(string message)
         {
             // 金額抽出
             decimal amount = ExtractionMoney(message);
             Debug.Log(amount.ToString());
 
-            try
-            {
-                // memo:ここで呼び出すのではなく上の階層から呼び出す方が良いか？
-                // 金額からイベント取得
-                string evName = getEventName(amount);
-                // イベント予約
-                _event.enqueEvent(evName);
-
-            }
-            catch(Exception e)
-            {
-                Debug.Log(e);
-            }
-
-            //金額を返却
-            PayedMoney result = new PayedMoney();
-            result.AMOUNT = amount;
-
-            return result;
-
+            // イベント名を取得して返す
+            return getEventName(amount);;
         }
 
         /// <summary>

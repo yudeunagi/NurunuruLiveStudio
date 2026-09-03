@@ -47,10 +47,14 @@ public class TestTCPServer : MonoBehaviour
     //トリガーマネージャ
     private TriggerManager trigger;
 
+    //イベントマネージャ
+    private EventManager eventManager;
+
     void Start()
     {
         supacha = _Managers.GetComponent<SuperChatManager>();
         trigger = _Managers.GetComponent<TriggerManager>();
+        eventManager = _Managers.GetComponent<EventManager>();
         StartServer();
     }
 
@@ -81,7 +85,6 @@ public class TestTCPServer : MonoBehaviour
 
         //接続した人とのネットワークストリームを取得
         NetworkStream stream = myClient.GetStream();
-//        StreamReader reader = new StreamReader(stream);
 
         var br = new BinaryReader(stream, System.Text.Encoding.UTF8);
 
@@ -114,13 +117,24 @@ public class TestTCPServer : MonoBehaviour
 
             //本文取得
             string message = System.Text.Encoding.UTF8.GetString(bs);
-            //その他いろいろな処理
 
-            // 金額からイベント起動
-            PayedMoney money = supacha.getAmount(message);
-            // 単語からイベント起動
-            trigger.Trigger(message);
+            // その他いろいろな処理
+            // 金額からイベント名取得
+            String moneyEvent = supacha.getAmount(message);
 
+            // 単語からイベント名取得
+            String triggerEvent = trigger.Trigger(message);
+ 
+            try
+            {
+                //イベント予約
+                eventManager.enqueEvent(moneyEvent);
+                eventManager.enqueEvent(triggerEvent);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }
 
             // クライアントの接続が切れたら
             if (myClient.Client.Poll(1000, SelectMode.SelectRead) && (myClient.Client.Available == 0))

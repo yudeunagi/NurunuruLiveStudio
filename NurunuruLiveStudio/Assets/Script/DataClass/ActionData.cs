@@ -44,7 +44,7 @@ namespace Unage
 
         //プレハブ名
         [SerializeField]
-        private PrefabType name;
+        private PrefabType prefabName;
 
         //パラメータ
         [SerializeField]
@@ -70,10 +70,10 @@ namespace Unage
             set { path = value; }
         }
 
-        public PrefabType Name
+        public PrefabType PrefabName
         {
-            get { return name; }
-            set { name = value; }
+            get { return prefabName; }
+            set { prefabName = value; }
         }
 
         public List<string> Parameters

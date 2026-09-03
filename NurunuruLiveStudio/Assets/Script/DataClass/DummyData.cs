@@ -562,7 +562,7 @@ namespace Unage
             ActionData action = new ActionData();
             action.ID = id;
             action.Type = type;
-            action.Name = pref;
+            action.PrefabName = pref;
             action.Path = path;
             action.Parameters = parameters;
 

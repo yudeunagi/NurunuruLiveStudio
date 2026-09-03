@@ -27,30 +27,16 @@ namespace Unage
             data = _SettingData.GetComponent<SettingData>();
         }
 
-
-
         /// <summary>
         /// コメント本文を受け取って、設定された条件に該当する場合イベントを予約する
         /// </summary>
         /// <param name="message">コメント本文</param>
-        public void Trigger(string message)
+        public String Trigger(string message)
         {
             //単語検索
             string eventName = FindWord(message);
 
-            //イベント名を取得できた場合呼び出しを行う
-            if (!string.IsNullOrEmpty(eventName))
-            {
-                try
-                {
-                    //イベント予約
-                    _event.enqueEvent(eventName);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log(e);
-                }
-            }
+            return eventName;
         }
 
         /// <summary>
@@ -82,11 +68,18 @@ namespace Unage
                         break;
                     //後方一致
                     case TriggerData.FINDTYPE.Sufix:
+                        if (findSufix(message, trg.Word))
+                        {
+                            return trg.EventName;
+                        }
 
                         break;
                     //完全一致
                     case TriggerData.FINDTYPE.Perfect:
-
+                        if (findPerfect(message, trg.Word))
+                        {
+                            return trg.EventName;
+                        }
                         break;
                 }
             }
@@ -124,7 +117,35 @@ namespace Unage
             }
             return false;
         }
+        /// <summary>
+        /// 後方一致検索
+        /// </summary>
+        /// <param name="message">検索対象となるメッセージ（コメント本文）</param>
+        /// <param name="keyword">検索する語句（予め設定したキーワード）</param>
+        /// <returns></returns>
+        private bool findSufix(string message, string keyword)
+        {
+            if (message.EndsWith(keyword))
+            {
+                return true;
+            }
+            return false;
+        }
 
+        /// <summary>
+        /// 完全一致検索
+        /// </summary>
+        /// <param name="message">検索対象となるメッセージ（コメント本文）</param>
+        /// <param name="keyword">検索する語句（予め設定したキーワード）</param>
+        /// <returns></returns>
+        private bool findPerfect(string message, string keyword)
+        {
+            if (message.Equals(keyword))
+            {
+                return true;
+            }
+            return false;
+        }
 
         // Update is called once per frame
         void Update()
