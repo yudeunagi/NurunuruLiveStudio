@@ -1,0 +1,17 @@
+# データ構造の修正
+## 必要な理由
+当初の思想では呼び出されるイベントデータとトリガーデータを別にすることでイベントデータを使いまわしできるようにしていたが。それが必要な機会が少なく、使いまわせるメリットよりデータ構造が複雑化するデメリットの方が勝っていたため。
+
+## やること
+TriggerDataクラスとSpachaDataクラスを統合、
+それに伴いTriggerManagerクラスとSpachaManagerクラスも統合する。
+EventDataクラスとActionDataクラスも統合する。
+
+TriggerDataクラス内にEventDataクラスのリストを持たせ、
+Triggerメソッドでイベント名を返していたところをEventDataリストを返すようにする。
+
+EventManagerクラスのenqueEventメソッドはEventDataリストを引数とし、キューに格納する。InvokeEventメソッドでリストのイベント（プレハブ生成）を実行する。
+
+# 仕様書フォルダ作成
+仕様についてはdocument内にspecificationフォルダを作りそこへ格納する。
+README.mdの内容はOverview.mdを作りそちらへ移動。Overview.md内から各種仕様書へのリンクを張る。

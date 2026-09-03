@@ -2,14 +2,18 @@
 {
 	"triggerDatas": [
 		{
-			"ID": "ID",
+			"id": "ID",
 			"type": "スパチャor単語",
 			"amount": "金額",
-			"ward": "発動ワード",
+			"word": "発動ワード",
+			"sound": {
+				"path": "音声ファイルのパス"
+				"volume": "音量"
+			},
 			"event": [
 				{
-					"actionType": "音か画像か",
-					"path": "音or画像のパス",
+					"id": "イベントのID",
+					"path": "画像のパス",
 					"prefabType": "落下とか位置表示とか",
 					"parameters": {
 						"lifeTime": "生存時間",
@@ -19,8 +23,8 @@
 					}
 				},
 				{
-					"actionType": "音か画像か",
-					"path": "音or画像のパス",
+					"id": "イベントのID",
+					"path": "画像のパス",
 					"prefabType": "落下とか位置表示とか",
 					"parameters": {
 						"lifeTime": "生存時間",
