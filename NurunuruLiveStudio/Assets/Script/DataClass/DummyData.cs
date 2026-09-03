@@ -20,7 +20,7 @@ namespace Unage
             param1.Add("");
             param1.Add("1.2");
 
-            ActionData action1 = createDummyAction(1, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/pet_hone.png", param1);
+            ActionData action1 = createDummyAction(1, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/pet_hone.png", param1);
             event1.Actions.Add(action1);
 
             return event1;
@@ -37,7 +37,7 @@ namespace Unage
             param2.Add("");
             param2.Add("1.2");
 
-            ActionData action2 = createDummyAction(2, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/onigiri_seachicken.png", param2);
+            ActionData action2 = createDummyAction(2, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/onigiri_seachicken.png", param2);
 
             event2.Actions.Add(action2);
             return event2;
@@ -54,7 +54,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action3 = createDummyAction(3, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/jouzu.png", paramn);
+            ActionData action3 = createDummyAction(3, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/jouzu.png", paramn);
 
             eventn.Actions.Add(action3);
 
@@ -72,7 +72,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action4 = createDummyAction(4, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/petbottle_tea.png", paramn);
+            ActionData action4 = createDummyAction(4, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/petbottle_tea.png", paramn);
 
             eventn.Actions.Add(action4);
 
@@ -90,7 +90,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action5 = createDummyAction(5, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/petbottle_tea.png", paramn);
+            ActionData action5 = createDummyAction(5, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/petbottle_tea.png", paramn);
 
             eventn.Actions.Add(action5);
             eventn.Actions.Add(action5);
@@ -110,7 +110,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action = createDummyAction(6, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/hanataba.png", paramn);
+            ActionData action = createDummyAction(6, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/hanataba.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -128,7 +128,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action = createDummyAction(7, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/chicken_honetsuki.png", paramn);
+            ActionData action = createDummyAction(7, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/chicken_honetsuki.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -146,7 +146,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action = createDummyAction(8, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/food_pizza.png", paramn);
+            ActionData action = createDummyAction(8, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/food_pizza.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -164,7 +164,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action = createDummyAction(9, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/christmas_cake.png", paramn);
+            ActionData action = createDummyAction(9, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/christmas_cake.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -182,7 +182,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action = createDummyAction(10, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/nigirizushi_moriawase.png", paramn);
+            ActionData action = createDummyAction(10, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/nigirizushi_moriawase.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -207,7 +207,7 @@ namespace Unage
             paramn.Add("0"); //X移動量
             paramn.Add("0"); //Y移動量
 
-            ActionData action = createDummyAction(11, ActionType.Prefeb, PrefabType.MoveSprite, "F:/picture/素材/nurusta/baran.png", paramn);
+            ActionData action = createDummyAction(11, ActionType.Prefeb, PrefabType.MoveSprite, "D:/Assets/nurusta/baran.png", paramn);
 
             eventn.Actions.Add(action);
             eventn.Actions.Add(action);
@@ -235,7 +235,7 @@ namespace Unage
             paramn.Add("0"); //X移動量
             paramn.Add("0"); //Y移動量
 
-            ActionData action = createDummyAction(12, ActionType.Prefeb, PrefabType.MoveSprite, "F:/picture/素材/nurusta/Yocchan.png", paramn);
+            ActionData action = createDummyAction(12, ActionType.Prefeb, PrefabType.MoveSprite, "D:/Assets/nurusta/Yocchan.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -253,7 +253,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action = createDummyAction(13, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/money_50.png", paramn);
+            ActionData action = createDummyAction(13, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/money_50.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -271,7 +271,7 @@ namespace Unage
             paramn.Add("");
             paramn.Add("1.2");
 
-            ActionData action = createDummyAction(14, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/money_100.png", paramn);
+            ActionData action = createDummyAction(14, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/money_100.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -296,7 +296,7 @@ namespace Unage
             paramn.Add("0"); //X移動量
             paramn.Add("0"); //Y移動量
 
-            ActionData action = createDummyAction(15, ActionType.Prefeb, PrefabType.MoveSprite, "F:/picture/素材/nurusta/puinyu.png", paramn);
+            ActionData action = createDummyAction(15, ActionType.Prefeb, PrefabType.MoveSprite, "D:/Assets/nurusta/puinyu.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -321,7 +321,7 @@ namespace Unage
             paramn.Add("0"); //X移動量
             paramn.Add("0"); //Y移動量
 
-            ActionData action = createDummyAction(16, ActionType.Prefeb, PrefabType.MoveSprite, "F:/picture/素材/nurusta/nyanpasu.png", paramn);
+            ActionData action = createDummyAction(16, ActionType.Prefeb, PrefabType.MoveSprite, "D:/Assets/nurusta/nyanpasu.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -343,7 +343,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(17, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/kokubankeshi.png", paramn);
+            ActionData action = createDummyAction(17, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/kokubankeshi.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -365,7 +365,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(18, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/tarai.png", paramn);
+            ActionData action = createDummyAction(18, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/tarai.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -387,7 +387,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(19, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/tsubo.png", paramn);
+            ActionData action = createDummyAction(19, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/tsubo.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -409,7 +409,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(20, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/pokeball.png", paramn);
+            ActionData action = createDummyAction(20, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/pokeball.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -431,7 +431,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(21, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/migawari.png", paramn);
+            ActionData action = createDummyAction(21, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/migawari.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -453,7 +453,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(22, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/pecacoin1.png", paramn);
+            ActionData action = createDummyAction(22, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/pecacoin1.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -475,7 +475,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(23, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/pecacoin100.png", paramn);
+            ActionData action = createDummyAction(23, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/pecacoin100.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -497,7 +497,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(24, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/dango.png", paramn);
+            ActionData action = createDummyAction(24, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/dango.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -519,7 +519,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(25, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/hamburger.png", paramn);
+            ActionData action = createDummyAction(25, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/hamburger.png", paramn);
 
             eventn.Actions.Add(action);
 
@@ -541,7 +541,7 @@ namespace Unage
             paramn.Add(""); //X位置
             paramn.Add("1.2"); //Y位置
 
-            ActionData action = createDummyAction(26, ActionType.Prefeb, PrefabType.FallSprite, "F:/picture/素材/nurusta/unadon.png", paramn);
+            ActionData action = createDummyAction(26, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/unadon.png", paramn);
 
             eventn.Actions.Add(action);
 

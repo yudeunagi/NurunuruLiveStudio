@@ -1,0 +1,37 @@
+//Triggerデータくらす（起動時に読み込む）
+{
+	"triggerDatas": [
+		{
+			"ID": "ID",
+			"type": "スパチャor単語",
+			"amount": "金額",
+			"ward": "発動ワード",
+			"event": [
+				{
+					"actionType": "音か画像か",
+					"path": "音or画像のパス",
+					"prefabType": "落下とか位置表示とか",
+					"parameters": {
+						"lifeTime": "生存時間",
+						"size": "サイズ",
+						"posX": "X位置",
+						"posY": "Y位置"
+					}
+				},
+				{
+					"actionType": "音か画像か",
+					"path": "音or画像のパス",
+					"prefabType": "落下とか位置表示とか",
+					"parameters": {
+						"lifeTime": "生存時間",
+						"size": "サイズ",
+						"posX": "X位置",
+						"posY": "Y位置"
+					}
+				}
+				
+			]
+		}
+	]
+}
+

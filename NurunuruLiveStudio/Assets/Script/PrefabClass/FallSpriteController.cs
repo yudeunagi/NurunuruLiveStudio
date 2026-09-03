@@ -12,12 +12,8 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
     /// <summary>
     /// 0:ライフタイム（未設定の場合5）
     /// 1:サイズ（未設定の場合1）
-    /// 2:座標X（未設定の場合ランダム）
-    /// 3:座標Y（未設定の場合ランダム）
-    /// 4:回転（未設定の場合ランダムか0）
-    /// 5:加速度方向（未設定の場合0）
-    /// 6:加速度（未設定の場合0）
-    /// 
+    /// 2:座標X（未設定の場合ランダム）使用しない
+    /// 3:座標Y（未設定の場合ランダム）使用しない
     /// 
     /// </summary>
     /// <param name="parameters"></param>
@@ -95,18 +91,10 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
         //カメラサイズ（本来ならカメラコンポーネントのsizeをちゃんと取ってくるべきだけどめんどいので直で書く）
         float camSize = 4.50f;
 
-        // x が未入力ならランダム
-        if (!float.TryParse(x, out fx))
-        {
-            // Screen.widthで画面のサイズを上限、下限値にする
-            fx = Random.Range(-1.0f, 1.0f);
-        }
-
-        // y が未入力ならランダム
-        if (!float.TryParse(y, out fy))
-        {
-            fy = Random.Range(-1.0f, 1.0f);
-        }
+        // X位置をランダム設定
+        fx = Random.Range(-1.0f, 1.0f);
+        // Y位置は固定
+        fy = 1.2f;
 
         //座標セット
         Vector3 pos = new Vector3(fx * camSize * aspect, fy * camSize);
