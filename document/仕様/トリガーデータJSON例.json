@@ -1,4 +1,3 @@
-//Triggerデータくらす（起動時に読み込む）
 {
 	"triggerDatas": [
 		{
@@ -6,11 +5,7 @@
 			"type": "スパチャor単語",
 			"amount": "金額",
 			"word": "発動ワード",
-			"sound": {
-				"path": "音声ファイルのパス"
-				"volume": "音量"
-			},
-			"event": [
+			"eventList": [
 				{
 					"id": "イベントのID",
 					"path": "画像のパス",
