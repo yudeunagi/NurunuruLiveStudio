@@ -26,6 +26,12 @@ namespace Unage
 
         private Queue<string> eventQue = new Queue<string>();
 
+
+        /// <summary>
+        /// イベント予約キュー
+        /// </summary>
+        private Queue<List<EventData>> eventQueNeo = new Queue<List<EventData>>();
+
         /// <summary>
         /// 設定（イベント設定やトリガー設定など）に関するコンポーネントを取得する
         /// </summary>
@@ -40,9 +46,9 @@ namespace Unage
         /// このメソッドは外部のトリガークラスから呼び出して使う。
         /// </summary>
         /// <param name="eventName"></param>
-        public void enqueEvent(string eventName)
+        public void enqueEvent(List<EventData> eventList)
         {
-            eventQue.Enqueue(eventName);
+            eventQueNeo.Enqueue(eventList);
         }
 
         /// <summary>
@@ -51,14 +57,14 @@ namespace Unage
         /// </summary>
         private void Update()
         {
-            if (eventQue.Count == 0)
+            if (eventQueNeo.Count == 0)
             {
                 return;
             }
 
-            string eventName = eventQue.Dequeue();
+            List<EventData> eventList = eventQueNeo.Dequeue();
 
-            InvokeEvent(eventName);
+            InvokeEvent(eventList);
 
         }
 
@@ -67,31 +73,13 @@ namespace Unage
         /// イベントデータリスト内に引数で渡されたイベント名が存在する場合、そのイベントを実行する。
         /// </summary>
         /// <param name="eventName"></param>
-        private void InvokeEvent(string eventName)
+        private void InvokeEvent(List<EventData> eventList)
         {
-            //イベント名からイベントを取得できなかった場合終了
-            EventData ev;
-            if (!data.EventDatas.TryGetValue(eventName,out ev))
+            //イベントリスト内の各イベントについて処理を行う
+            foreach(EventData ev in eventList)
             {
-                return;
-            }
-
-            //設定されたアクションを実行する
-            foreach(ActionData act in ev.Actions)
-            {
-                switch(act.Type)
-                {
-                    //サウンド実行
-                    case ActionData.ActionType.Sound:
-                        PlaySound(act);
-                        break;
-
-                    //プレハブ生成実行
-                    case ActionData.ActionType.Prefeb:
-                        CreateObject(act);
-                        break;
-
-                }
+                CreateObject(ev);
+                break;
             }
         }
 
@@ -113,10 +101,10 @@ namespace Unage
         /// 
         /// </summary>
         /// <param name="data"></param>
-        private void CreateObject(ActionData data)
+        private void CreateObject(EventData data)
         {
             //プレハブ名を取得
-            string prefName = data.PrefabName.ToString();
+            string prefName = data.PrefabType.ToString();
 
             //プレハブを生成
             GameObject prefab = (GameObject)Resources.Load("Prefabs/" + prefName);
@@ -157,7 +145,7 @@ namespace Unage
         private Texture2D ReadTexture(string path, int width ,int height)
         {
             //memo:パス指定が上手くいかなかった（先頭にunityのパスが付与されてしまう）ため書式が間違っていると思い、正しい書式を確認するためファイル読み込み処理を入れてみた。
-            //           var patht = EditorUtility.OpenFilePanel("Open png", "", "png");
+            // var patht = EditorUtility.OpenFilePanel("Open png", "", "png");
 
             //memo: なんか File.ReadAllBytes(ppth) だと読み込みはするがテクスチャが表示されない
             // byte[] readBinary = File.ReadAllBytes(ppth);

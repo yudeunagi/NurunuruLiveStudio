@@ -120,16 +120,17 @@ public class TestTCPServer : MonoBehaviour
 
             // その他いろいろな処理
             // 金額からイベント名取得
-            String moneyEvent = supacha.getAmount(message);
-
+            List<EventData> moneyEventList = trigger.getAmount(message);
             // 単語からイベント名取得
-            String triggerEvent = trigger.Trigger(message);
+            List<EventData> triggerEventList = trigger.Trigger(message);
  
             try
             {
                 //イベント予約
-                eventManager.enqueEvent(moneyEvent);
-                eventManager.enqueEvent(triggerEvent);
+                Debug.Log("enque開始");
+                eventManager.enqueEvent(moneyEventList);
+                eventManager.enqueEvent(triggerEventList);
+                Debug.Log("enque完了");
             }
             catch (Exception e)
             {

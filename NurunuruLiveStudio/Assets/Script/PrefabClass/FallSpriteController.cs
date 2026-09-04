@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unage;
 using UnityEngine;
 
 public class FallSpriteController : MonoBehaviour, PrefabBase
@@ -9,31 +10,27 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
     // 生存時間
     private float _lifeTime;
     
+
     /// <summary>
-    /// 0:ライフタイム（未設定の場合5）
-    /// 1:サイズ（未設定の場合1）
-    /// 2:座標X（未設定の場合ランダム）使用しない
-    /// 3:座標Y（未設定の場合ランダム）使用しない
-    /// 
+    /// パラメーターを設定する
     /// </summary>
-    /// <param name="parameters"></param>
-    public void SetParameters(List<string> parameters)
+    /// <param name="parameters">設定するパラメーターのマップ</param>
+    public void SetParameters(Dictionary<string, string> parameters)
     {
-        int i = 0;
-        foreach(string param in parameters)
-        {
-            _param[i] = param;
-            i++;
-        }
+        // パラメーターに格納された値を取得
+        string lifetime = parameters[EventData.PARAMETER_KEY.LIFETIME.ToString()];
+        string size = parameters[EventData.PARAMETER_KEY.SIZE.ToString()];
+        // 座標は使用しない、なんとなく取得しているだけ
+        string posX = parameters[EventData.PARAMETER_KEY.POSITION_X.ToString()];
+        string posY = parameters[EventData.PARAMETER_KEY.POSITION_Y.ToString()];
 
         //タイマーセット
-        SetLifeTime(_param[0]);
+        SetLifeTime(lifetime);
         //サイズセット
-        SetScale(_param[1]);
+        SetScale(size);
         //座標セット
-        SetPosition(_param[2], _param[3]);
+        SetPosition(posX, posY);
 
-//        throw new System.NotImplementedException();
     }
 
     /// <summary>
@@ -81,6 +78,9 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
+    /// <remarks>
+    /// 現在は引数を使用せず、ランダムなX座標と固定のY座標を設定する
+    /// </remarks>
     private void SetPosition(string x, string y)
     {
         float fx, fy;
@@ -89,6 +89,7 @@ public class FallSpriteController : MonoBehaviour, PrefabBase
         float aspect = (float)Screen.currentResolution.width / (float)Screen.currentResolution.height;
 
         //カメラサイズ（本来ならカメラコンポーネントのsizeをちゃんと取ってくるべきだけどめんどいので直で書く）
+        // TODO: カメラコンポーネントから正しいサイズを取得するように修正する
         float camSize = 4.50f;
 
         // X位置をランダム設定

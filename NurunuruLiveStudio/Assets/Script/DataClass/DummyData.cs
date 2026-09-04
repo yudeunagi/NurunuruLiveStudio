@@ -8,6 +8,8 @@ namespace Unage
 {
     public class DummyData : MonoBehaviour
     {
+
+        /*
         static public EventData getDummyEvent1()
         {
             //JSONファイルからイベント情報をロードする
@@ -395,28 +397,6 @@ namespace Unage
         }
 
         /// <summary>
-        /// モンスターボール
-        /// </summary>
-        /// <returns></returns>
-        static public EventData getDummyEvent20()
-        {
-            EventData eventn = new EventData();
-            eventn.ID = 20;
-            eventn.Name = "pokeball";
-            List<string> paramn = new List<string>();
-            paramn.Add("5");
-            paramn.Add("0.25"); //サイズ
-            paramn.Add(""); //X位置
-            paramn.Add("1.2"); //Y位置
-
-            ActionData action = createDummyAction(20, ActionType.Prefeb, PrefabType.FallSprite, "D:/Assets/nurusta/pokeball.png", paramn);
-
-            eventn.Actions.Add(action);
-
-            return eventn;
-        }
-
-        /// <summary>
         /// みがわり
         /// </summary>
         /// <returns></returns>
@@ -661,35 +641,116 @@ namespace Unage
             Debug.Log(SpachaDatas);
         }
 
+        /// <summary>
+        /// トリガーデータのロード、非推奨
+        /// </summary>
         public static void LoadMockTriggerData(List<TriggerData> triggerDatas)
         {
+
+
+
             //サンプルデータ1 草
             TriggerData tri = new TriggerData();
             tri.Word = "草";
             tri.EventName = "kusa";
-            tri.Findtype = TriggerData.FINDTYPE.Partial;
+            tri.Findtype = TriggerData.FINDT_YPE.Partial;
             triggerDatas.Add(tri);
 
             //サンプルデータ2 よっちゃん
             tri = new TriggerData();
             tri.Word = "よっちゃん";
             tri.EventName = "yocchan";
-            tri.Findtype = TriggerData.FINDTYPE.Partial;
+            tri.Findtype = TriggerData.FINDT_YPE.Partial;
             triggerDatas.Add(tri);
 
             //サンプルデータ3 ぷいにゅー
             tri = new TriggerData();
             tri.Word = "ぷいにゅ";
             tri.EventName = "puinyu";
-            tri.Findtype = TriggerData.FINDTYPE.Partial;
+            tri.Findtype = TriggerData.FINDT_YPE.Partial;
             triggerDatas.Add(tri);
 
             //サンプルデータ4 にゃんぱすー
             tri = new TriggerData();
             tri.Word = "にゃんぱす";
             tri.EventName = "nyanpasu";
-            tri.Findtype = TriggerData.FINDTYPE.Partial;
+            tri.Findtype = TriggerData.FINDT_YPE.Partial;
             triggerDatas.Add(tri);
+        }
+*/
+
+        /// <summary>
+        /// 新しいトリガーデータモックのロード
+        /// </summary>
+        public static List<TriggerData> LoadNewMockTriggerData()
+        {
+            // トリガーデータリストの作成
+            List<TriggerData> triggerDatas = new List<TriggerData>();
+
+            // サンプル1 コイン
+            TriggerData tri = createNewDummyTriggerData(1, TriggerData.EVENT_TYPE.Amount, new decimal(10), null, TriggerData.FINDT_YPE.Partial);
+            // パラメーター
+            Dictionary<string, string> param = CreateDummySpriteParameter("4", "0.8", null, null);
+            // イベントデータの作成
+            EventData eventData = createNewDummyEventData(1, "D:/Assets/nurusta/pecacoin1.png", EventData.PREFAB_TYPE.FallSprite, param);
+            // イベントデータをトリガーに追加
+            tri.EventList.Add(eventData);
+            // トリガーデータの追加完了
+            triggerDatas.Add(tri);
+
+
+            return triggerDatas;
+        }
+
+        private static TriggerData createNewDummyTriggerData(int id, TriggerData.EVENT_TYPE type, decimal amount, string word, TriggerData.FINDT_YPE findType)
+        {
+            TriggerData tri = new TriggerData();
+            tri.Id = id;
+            tri.EventType = type;
+            tri.Amount = amount;
+            tri.Word = word;
+            tri.Findtype = findType;
+            tri.EventList = new List<EventData>();
+
+            return tri;
+        }
+
+        /// <summary>
+        /// 新しいダミーイベントデータの作成
+        /// </summary>
+        /// <param name="id">イベントID</param>
+        /// <param name="path">イベントのパス</param>
+        /// <param name="prefabType">プレハブの種類</param>
+        /// <param name="parameters">イベントのパラメータ</param>
+        /// <returns>作成されたダミーイベントデータ</returns>
+        private static EventData createNewDummyEventData(int id, string path, EventData.PREFAB_TYPE prefabType, Dictionary<string, string> parameters)
+        {
+            EventData eventData = new EventData();
+            eventData.ID = id;
+            eventData.Path = path;
+            eventData.PrefabType = prefabType;
+            eventData.Parameters = parameters;
+
+            return eventData;
+        }   
+
+        /// <summary>
+        /// ダミースプライトパラメータの作成
+        /// </summary>
+        /// <param name="lifetime">寿命</param>
+        /// <param name="size">サイズ</param>
+        /// <param name="positionX">X位置</param>
+        /// <param name="positionY">Y位置</param>
+        /// <returns>作成されたスプライトパラメータのマップ</returns>
+        private static Dictionary<string, string> CreateDummySpriteParameter(string lifetime, string size, string positionX, string positionY)
+        {
+            Dictionary<string, string> spriteParameters = new Dictionary<string, string>();
+            spriteParameters.Add(EventData.PARAMETER_KEY.LIFETIME.ToString(), lifetime);
+            spriteParameters.Add(EventData.PARAMETER_KEY.SIZE.ToString(), size);
+            spriteParameters.Add(EventData.PARAMETER_KEY.POSITION_X.ToString(), positionX);
+            spriteParameters.Add(EventData.PARAMETER_KEY.POSITION_Y.ToString(), positionY);
+
+            return spriteParameters;
         }
     }
 }

@@ -16,5 +16,5 @@ public interface PrefabBase
     /// パラメーターセット
     /// </summary>
     /// <param name="parameters"></param>
-    void SetParameters(List<string> parameters);
+    void SetParameters(Dictionary<string, string> parameters);
 }

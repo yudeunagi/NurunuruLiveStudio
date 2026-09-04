@@ -36,7 +36,7 @@ namespace Unage//←パッケージ的なもの
         /// </summary>
         /// <param name="message">コメント本文</param>
         /// <returns>イベント名</returns>
-        public String getAmount(string message)
+        public TriggerData getAmount(string message)
         {
             // 金額抽出
             decimal amount = ExtractionMoney(message);
@@ -82,18 +82,18 @@ namespace Unage//←パッケージ的なもの
         /// 金額
         /// </summary>
         /// <param name="amount"></param>
-        /// <returns></returns>
-        public String getEventName(decimal amount)
+        /// <returns>該当するイベントリスト。該当なしの場合はnull。</returns>
+        public TriggerData getEventName(decimal amount)
         {
-            foreach (SpachaData spa in data.SpachaDatas)
+            foreach (TriggerData tri in data.TriggerDatas)
             {
                 //入力された金額が設定情報の金額以上の場合、設定されたイベント名を返す
-                if(decimal.Compare(amount, spa.Amount) >= 0)
+                if(decimal.Compare(amount, tri.Amount) >= 0)
                 {
-                    return spa.EventName;
+                    return tri;
                 }
             }
-            return "";
+            return null;
         }
 
     }

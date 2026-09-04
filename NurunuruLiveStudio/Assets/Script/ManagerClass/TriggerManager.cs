@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Unage
@@ -27,65 +28,158 @@ namespace Unage
             data = _SettingData.GetComponent<SettingData>();
         }
 
+
         /// <summary>
-        /// コメント本文を受け取って、設定された条件に該当する場合イベントを予約する
+        ///
+        /// コメント本文を受け取って金額が含まれているか判定する
+        /// 含まれている場合該当するトリガーデータを返す
+        /// 
         /// </summary>
         /// <param name="message">コメント本文</param>
-        public String Trigger(string message)
+        /// <returns>該当するトリガーデータ。該当なしの場合はnull。</returns>
+        public List<EventData> getAmount(string message)
+        {
+            // 金額抽出
+            decimal amount = ExtractionMoney(message);
+            Debug.Log($"金額={amount.ToString()}");
+
+            // イベント名を取得して返す
+            return getEventName(amount);;
+        }
+
+        /// <summary>
+        /// コメントに含まれる金額を抽出する
+        /// todo:同じような処理で＄の分もそのうち作る
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private decimal ExtractionMoney (string message)
+        {
+            // \ から始まる数値を抜き出す、小数点はいったん忘れる
+            var reg = new Regex("[￥¥\\\\][0-9０-９,]+");
+            Match m = reg.Match(message);
+
+            string s = m.Value;
+            s = CommonUtils.ZtoH(s);
+
+            //数値のみ抜き出す。
+            var num = new Regex("[^0-9]");
+            s = num.Replace(s, "");
+
+            //decimalに変換
+            decimal result;
+
+            //変換に成功した場合変換した値を返す
+            if(decimal.TryParse(s, out result))
+            {
+                return result;
+            }
+
+            //変換失敗したら0を返す
+            return new decimal(0);
+        }
+
+        /// <summary>
+        /// 金額
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <returns>該当するイベントリスト。該当なしの場合はnull。</returns>
+        public List<EventData> getEventName(decimal amount)
+        {
+            foreach (TriggerData tri in data.TriggerDatas)
+            {
+                // トリガータイプが金額でない場合はスキップ
+                if(tri.EventType != TriggerData.EVENT_TYPE.Amount)
+                {
+                    continue;
+                }
+
+                Debug.Log($"設定情報の金額={tri.Amount}");
+                //入力された金額が設定情報の金額以上の場合、設定されたイベント名を返す
+                if(decimal.Compare(amount, tri.Amount) >= 0)
+                {
+                    Debug.Log($"入力された金額={amount} は設定情報の金額={tri.Amount} 以上です。");
+                    return tri.EventList;
+                }
+            }
+            return new List<EventData>();
+        }
+
+
+
+        /// <summary>
+        /// コメント本文を受け取って、設定された条件に該当するトリガーデータを返す
+        /// </summary>
+        /// <param name="message">コメント本文</param>
+        /// <returns>該当するトリガーデータ。該当なしの場合はnull。</returns>
+        public List<EventData> Trigger(string message)
         {
             //単語検索
-            string eventName = FindWord(message);
+            List<EventData> eventList = FindWord(message);
 
-            return eventName;
+            return eventList;
         }
+
 
         /// <summary>
         /// コメント本文が設定された条件に一致するか順次チェックを行い。
         /// 一致する場合イベント名を返却する。
         /// </summary>
         /// <param name="message">コメント本文</param>
-        /// <returns>イベント名</returns>
-        private string FindWord(string message)
+        /// <returns>トリガーデータ</returns>
+        private List<EventData> FindWord(string message)
         {
             //設定されたトリガーのリストから順次チェックを行う
             foreach (TriggerData trg in data.TriggerDatas)
             {
+                // トリガータイプがワードでない場合はスキップ
+                if(trg.EventType != TriggerData.EVENT_TYPE.Word)
+                {
+                    continue;
+                }
+
+                // ワードが設定されていない場合はスキップ
+                if(trg.Word == null || trg.Word == "")
+                {
+                    continue;
+                }
+
                 switch (trg.Findtype)
                 {
                     //部分一致
-                    case TriggerData.FINDTYPE.Partial:
+                    case TriggerData.FINDT_YPE.Partial:
                         if (findPartial(message, trg.Word))
                         {
-                            return trg.EventName;
+                            return trg.EventList;
                         }
                         break;
                     //前方一致
-                    case TriggerData.FINDTYPE.Prefix:
+                    case TriggerData.FINDT_YPE.Prefix:
                         if (findPrefix(message, trg.Word))
                         {
-                            return trg.EventName;
+                            return trg.EventList;
                         }
                         break;
                     //後方一致
-                    case TriggerData.FINDTYPE.Sufix:
+                    case TriggerData.FINDT_YPE.Sufix:
                         if (findSufix(message, trg.Word))
                         {
-                            return trg.EventName;
+                            return trg.EventList;
                         }
 
                         break;
                     //完全一致
-                    case TriggerData.FINDTYPE.Perfect:
+                    case TriggerData.FINDT_YPE.Perfect:
                         if (findPerfect(message, trg.Word))
                         {
-                            return trg.EventName;
+                            return trg.EventList;
                         }
                         break;
                 }
             }
 
-            // 一致するものがない場合空文字を返却
-            return "";
+            // 一致するものがない場合nullを返却
+            return new List<EventData>();
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unage;
 using UnityEngine;
 
 public class MoveSpriteController : MonoBehaviour, PrefabBase
@@ -27,25 +28,26 @@ public class MoveSpriteController : MonoBehaviour, PrefabBase
     /// 
     /// </summary>
     /// <param name="parameters"></param>
-    public void SetParameters(List<string> parameters)
+    public void SetParameters(Dictionary<string, string> parameters)
     {
-        int i = 0;
-        foreach (string param in parameters)
-        {
-            _param[i] = param;
-            i++;
-        }
+        // パラメーターに格納された値を取得
+        string lifetime = parameters[EventData.PARAMETER_KEY.LIFETIME.ToString()];
+        string size = parameters[EventData.PARAMETER_KEY.SIZE.ToString()];
+        string posX = parameters[EventData.PARAMETER_KEY.POSITION_X.ToString()];
+        string posY = parameters[EventData.PARAMETER_KEY.POSITION_Y.ToString()];
+        string moveX = parameters[EventData.PARAMETER_KEY.MOVEMENT_X.ToString()];
+        string moveY = parameters[EventData.PARAMETER_KEY.MOVEMENT_Y.ToString()];
 
         //タイマーセット
-        SetLifeTime(_param[0]);
+        SetLifeTime(lifetime);
         //サイズセット
-        SetScale(_param[1]);
+        SetScale(size);
         //座標セット
-        SetPosition(_param[2], _param[3]);
+        SetPosition(posX, posY);
         //回転角度セット
 
         //移動量セット
-        SetMovement(_param[5], _param[6]);
+        SetMovement(moveX, moveY);
 
     }
 
