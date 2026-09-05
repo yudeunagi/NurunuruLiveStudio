@@ -135,9 +135,6 @@ public class MoveSpriteController : MonoBehaviour, PrefabBase
     /// <param name="y"></param>
     private void SetMovement(string x, string y)
     {
-        Debug.Log(x);
-        Debug.Log(y);
-
         // xが未入力 or Floatに変換できなかったら0を設定
         float fx;
         if (float.TryParse(x, out fx))

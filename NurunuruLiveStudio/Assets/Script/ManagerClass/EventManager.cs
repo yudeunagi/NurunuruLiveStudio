@@ -79,17 +79,7 @@ namespace Unage
             foreach(EventData ev in eventList)
             {
                 CreateObject(ev);
-                break;
             }
-        }
-
-        /// <summary>
-        /// サウンドを鳴らす
-        /// </summary>
-        /// <param name="data"></param>
-        private void PlaySound(ActionData data)
-        {
-
         }
 
         /// <summary>

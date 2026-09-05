@@ -41,9 +41,6 @@ public class TestTCPServer : MonoBehaviour
     [SerializeField]
     private GameObject _Managers;
 
-    //スパチャマネージャ
-    private SuperChatManager supacha;
-
     //トリガーマネージャ
     private TriggerManager trigger;
 
@@ -52,7 +49,6 @@ public class TestTCPServer : MonoBehaviour
 
     void Start()
     {
-        supacha = _Managers.GetComponent<SuperChatManager>();
         trigger = _Managers.GetComponent<TriggerManager>();
         eventManager = _Managers.GetComponent<EventManager>();
         StartServer();

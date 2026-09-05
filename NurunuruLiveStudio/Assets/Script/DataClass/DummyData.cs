@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unage;
-using static Unage.ActionData;
 
 namespace Unage
 {
@@ -690,10 +689,25 @@ namespace Unage
             // サンプル1 コイン
             TriggerData tri = createNewDummyTriggerData(1, TriggerData.EVENT_TYPE.Amount, new decimal(10), null, TriggerData.FINDT_YPE.Partial);
             // パラメーター
-            Dictionary<string, string> param = CreateDummySpriteParameter("4", "0.8", null, null);
+            Dictionary<string, string> param = CreateDummySpriteParameter("4", "0.8", null, null, null, null);
             // イベントデータの作成
             EventData eventData = createNewDummyEventData(1, "D:/Assets/nurusta/pecacoin1.png", EventData.PREFAB_TYPE.FallSprite, param);
             // イベントデータをトリガーに追加
+            tri.EventList.Add(eventData);
+            // トリガーデータの追加完了
+            triggerDatas.Add(tri);
+
+            // サンプル2 草
+            tri = createNewDummyTriggerData(2, TriggerData.EVENT_TYPE.Word, 0, "草", TriggerData.FINDT_YPE.Partial);
+            // パラメーターの作成
+            param = CreateDummySpriteParameter("4", "0.8", null, "-0.85", null, null);
+            // イベントデータの作成と追加
+            eventData = createNewDummyEventData(2, "D:/Assets/nurusta/baran.png", EventData.PREFAB_TYPE.MoveSprite, param);
+            tri.EventList.Add(eventData);
+            eventData = createNewDummyEventData(3, "D:/Assets/nurusta/baran.png", EventData.PREFAB_TYPE.MoveSprite, param);
+            tri.EventList.Add(eventData);
+            eventData = createNewDummyEventData(4, "D:/Assets/nurusta/baran.png", EventData.PREFAB_TYPE.MoveSprite, param);
+            // イベントデータの追加完了
             tri.EventList.Add(eventData);
             // トリガーデータの追加完了
             triggerDatas.Add(tri);
@@ -742,13 +756,15 @@ namespace Unage
         /// <param name="positionX">X位置</param>
         /// <param name="positionY">Y位置</param>
         /// <returns>作成されたスプライトパラメータのマップ</returns>
-        private static Dictionary<string, string> CreateDummySpriteParameter(string lifetime, string size, string positionX, string positionY)
+        private static Dictionary<string, string> CreateDummySpriteParameter(string lifetime, string size, string positionX, string positionY, string movementX, string movementY)
         {
             Dictionary<string, string> spriteParameters = new Dictionary<string, string>();
             spriteParameters.Add(EventData.PARAMETER_KEY.LIFETIME.ToString(), lifetime);
             spriteParameters.Add(EventData.PARAMETER_KEY.SIZE.ToString(), size);
             spriteParameters.Add(EventData.PARAMETER_KEY.POSITION_X.ToString(), positionX);
             spriteParameters.Add(EventData.PARAMETER_KEY.POSITION_Y.ToString(), positionY);
+            spriteParameters.Add(EventData.PARAMETER_KEY.MOVEMENT_X.ToString(), movementX);
+            spriteParameters.Add(EventData.PARAMETER_KEY.MOVEMENT_Y.ToString(), movementY);
 
             return spriteParameters;
         }

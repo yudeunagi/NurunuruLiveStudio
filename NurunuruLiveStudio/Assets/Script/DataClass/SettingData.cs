@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unage;
-using static Unage.ActionData;
 
 /// <summary>
 /// 各種設定を扱う
