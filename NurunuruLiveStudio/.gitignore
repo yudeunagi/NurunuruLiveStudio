@@ -64,3 +64,10 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# UserSettings
+# This will ignore the Unity user settings folder
+/[Uu]serSettings/
+
+# Vscode
+/.vscode/
