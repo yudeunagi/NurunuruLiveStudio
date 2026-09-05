@@ -1,5 +1,4 @@
-# 不要ファイル削除
-ActionData、SpachaData、SpachaManagerクラスを消す
+
 
 # UI開発用ブランチ作成
 不要ファイル削除、ドキュメント更新後新ブランチを作成しそちらで作業する。

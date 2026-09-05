@@ -86,6 +86,13 @@ namespace Unage
         /// <returns>該当するイベントリスト。該当なしの場合はnull。</returns>
         public List<EventData> getEventName(decimal amount)
         {
+            // 返却用のイベントリスト
+            List<EventData> resultEventList = new List<EventData>();
+
+            // 検出したトリガーの最大金額を保持する変数
+            decimal maxAmount = 0;
+
+            // 設定されたトリガーのリストから順次チェックを行う
             foreach (TriggerData tri in data.TriggerDatas)
             {
                 // トリガータイプが金額でない場合はスキップ
@@ -95,14 +102,15 @@ namespace Unage
                 }
 
                 Debug.Log($"設定情報の金額={tri.Amount}");
-                //入力された金額が設定情報の金額以上の場合、設定されたイベント名を返す
-                if(decimal.Compare(amount, tri.Amount) >= 0)
+                //入力された金額が設定情報の金額以上＆最大金額の場合、設定されたイベント名を返す
+                if(decimal.Compare(amount, tri.Amount) >= 0 && tri.Amount >= maxAmount)
                 {
                     Debug.Log($"入力された金額={amount} は設定情報の金額={tri.Amount} 以上です。");
-                    return tri.EventList;
+                    maxAmount = tri.Amount;
+                    resultEventList = tri.EventList;
                 }
             }
-            return new List<EventData>();
+            return resultEventList;
         }
 
 

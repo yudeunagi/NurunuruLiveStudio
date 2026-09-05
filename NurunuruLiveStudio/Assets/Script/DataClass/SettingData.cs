@@ -1,5 +1,7 @@
-﻿using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using UnityEngine;
 using Unage;
 
@@ -8,23 +10,87 @@ using Unage;
 /// </summary>
 public class SettingData : MonoBehaviour
 {
-    //トリガーに関するデータ
-    private List<TriggerData> _triggerDatas = new List<TriggerData>();
+    private const string SettingsFileName = "triggerDatas.json";
 
-    //以下アクセサ
+    // トリガーに関するデータ
+    private List<TriggerData> _triggerDatas = new List<TriggerData>();
+    private string _settingsFilePath;
+    private string _legacySettingsFilePath;
+
+    [Serializable]
+    private class TriggerDataFile
+    {
+        public List<TriggerDataRecord> triggerDatas = new List<TriggerDataRecord>();
+    }
+
+    [Serializable]
+    private class TriggerDataRecord
+    {
+        public int id;
+        public string eventType;
+        public string type;
+        public string amount;
+        public string word;
+        public string findType;
+        public List<EventDataRecord> eventList = new List<EventDataRecord>();
+    }
+
+    [Serializable]
+    private class EventDataRecord
+    {
+        public int id;
+        public string path;
+        public string prefabType;
+        public ParameterRecord parameters = new ParameterRecord();
+    }
+
+    [Serializable]
+    private class ParameterRecord
+    {
+        public string lifeTime;
+        public string size;
+        public string posX;
+        public string posY;
+        public string movX;
+        public string movY;
+    }
+
+    // 以下アクセサ
     public List<TriggerData> TriggerDatas
     {
         get { return _triggerDatas; }
         set { _triggerDatas = value; }
     }
 
+    private void Awake()
+    {
+        _settingsFilePath = Path.Combine(Application.persistentDataPath, SettingsFileName);
+        _legacySettingsFilePath = Path.Combine(Application.dataPath, SettingsFileName);
+    }
+
+    /// <summary>
+    /// 開始時に保存した各種設定を読み込む
+    /// </summary>
+    private void Start()
+    {
+        LoadEventData();
+    }
 
     /// <summary>
     /// イベントデータのセーブ
     /// </summary>
     public void SaveEventData()
     {
-        //eventDatasのデータをJSONファイルへ保存する
+        TriggerDataFile file = BuildFileFromTriggerDatas();
+        string json = JsonUtility.ToJson(file, true);
+
+        string directory = Path.GetDirectoryName(_settingsFilePath);
+        if (!string.IsNullOrEmpty(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        File.WriteAllText(_settingsFilePath, json);
     }
 
     /// <summary>
@@ -32,7 +98,28 @@ public class SettingData : MonoBehaviour
     /// </summary>
     public void LoadEventData()
     {
-        //JSONファイルからイベント情報を読み込みeventDatasへセットする
+        string readPath = ResolveSettingsReadPath();
+        if (string.IsNullOrEmpty(readPath))
+        {
+            LoadMockTriggerData();
+            return;
+        }
+
+        string json = File.ReadAllText(readPath);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            LoadMockTriggerData();
+            return;
+        }
+
+        TriggerDataFile file = JsonUtility.FromJson<TriggerDataFile>(json);
+        if (file == null || file.triggerDatas == null)
+        {
+            LoadMockTriggerData();
+            return;
+        }
+
+        _triggerDatas = BuildTriggerDatasFromFile(file);
     }
 
     /// <summary>
@@ -40,135 +127,223 @@ public class SettingData : MonoBehaviour
     /// </summary>
     public void LoadMockEventData()
     {
-        //JSONファイルからイベント情報をロードする 骨
-        // EventData event1 = DummyData.getDummyEvent1();
-        // _eventDatas.Add(event1.Name, event1);
-
-        // //イベント2 おにぎり
-        // EventData event2 = DummyData.getDummyEvent2();
-        // _eventDatas.Add(event2.Name, event2);
-
-        // //イベント3 じょうず星人
-        // EventData event3 = DummyData.getDummyEvent3();
-        // _eventDatas.Add(event3.Name, event3);
-
-        // //イベント4 お茶
-        // EventData event4 = DummyData.getDummyEvent4();
-        // _eventDatas.Add(event4.Name, event4);
-
-        // //イベント5 お茶x3
-        // EventData event5 = DummyData.getDummyEvent5();
-        // _eventDatas.Add(event5.Name, event5);
-
-        // //イベント6 花束
-        // EventData event6 = DummyData.getDummyEvent6();
-        // _eventDatas.Add(event6.Name, event6);
-
-        // //イベント7 チキン
-        // EventData event7 = DummyData.getDummyEvent7();
-        // _eventDatas.Add(event7.Name, event7);
-
-        // //イベント8 ピザ
-        // EventData event8 = DummyData.getDummyEvent8();
-        // _eventDatas.Add(event8.Name, event8);
-
-        // //イベント9 ケーキ
-        // EventData event9 = DummyData.getDummyEvent9();
-        // _eventDatas.Add(event9.Name, event9);
-
-        // //イベント10 おすし
-        // EventData event10 = DummyData.getDummyEvent10();
-        // _eventDatas.Add(event10.Name, event10);
-
-        // //イベント11 草
-        // EventData event11 = DummyData.getDummyEvent11();
-        // _eventDatas.Add(event11.Name, event11);
-
-        // //イベント12 よっちゃん
-        // EventData event12 = DummyData.getDummyEvent12();
-        // _eventDatas.Add(event12.Name, event12);
-
-        // //イベント13 50円
-        // EventData event13 = DummyData.getDummyEvent13();
-        // _eventDatas.Add(event13.Name, event13);
-
-        // //イベント14 100円
-        // EventData event14 = DummyData.getDummyEvent14();
-        // _eventDatas.Add(event14.Name, event14);
-
-        // //イベント15 ぷいにゅー
-        // EventData event15 = DummyData.getDummyEvent15();
-        // _eventDatas.Add(event15.Name, event15);
-
-        // //イベント16 にゃんぱすー
-        // EventData event16 = DummyData.getDummyEvent16();
-        // _eventDatas.Add(event16.Name, event16);
-
-        // //イベント17 黒板消し
-        // EventData event17 = DummyData.getDummyEvent17();
-        // _eventDatas.Add(event17.Name, event17);
-
-        // //イベント18 たらい
-        // EventData event18 = DummyData.getDummyEvent18();
-        // _eventDatas.Add(event18.Name, event18);
-
-        // //イベント19 壺
-        // EventData event19 = DummyData.getDummyEvent19();
-        // _eventDatas.Add(event19.Name, event19);
-
-        // //イベント20 モンスターボール
-        // EventData event20 = DummyData.getDummyEvent20();
-        // _eventDatas.Add(event20.Name, event20);
-
-        // //イベント21 身代わり人形
-        // EventData event21 = DummyData.getDummyEvent21();
-        // _eventDatas.Add(event21.Name, event21);
-
-        // //イベント22 ペカコイン1
-        // EventData event22 = DummyData.getDummyEvent22();
-        // _eventDatas.Add(event22.Name, event22);
-
-        // //イベント23 ペカコイン100
-        // EventData event23 = DummyData.getDummyEvent23();
-        // _eventDatas.Add(event23.Name, event23);
-
-        // //イベント24 だんご
-        // EventData event24 = DummyData.getDummyEvent24();
-        // _eventDatas.Add(event24.Name, event24);
-
-        // //イベント25 ハンバーガー
-        // EventData event25 = DummyData.getDummyEvent25();
-        // _eventDatas.Add(event25.Name, event25);
-
-        // //イベント26 うな丼
-        // EventData event26 = DummyData.getDummyEvent26();
-        // _eventDatas.Add(event26.Name, event26);
-
-        Debug.Log("mockset完了");
-
+        LoadMockTriggerData();
     }
-
-    /// <summary>
-    /// 
-    /// 
-    /// ソート参考：
-    /// https://qiita.com/tetsu8/items/96b8b889c57eb55125d1
-    /// 
-    /// </summary>
 
     public void LoadMockTriggerData()
     {
         TriggerDatas = DummyData.LoadNewMockTriggerData();
     }
 
-    /// <summary>
-    /// 開始時に保存した各種設定を読み込む
-    /// </summary>
-    void Start()
+    private TriggerDataFile BuildFileFromTriggerDatas()
     {
-        Debug.Log("start");
+        TriggerDataFile file = new TriggerDataFile();
 
-        LoadMockTriggerData();
+        foreach (TriggerData trigger in _triggerDatas)
+        {
+            TriggerDataRecord triggerRecord = new TriggerDataRecord();
+            triggerRecord.id = trigger.Id;
+            triggerRecord.eventType = trigger.EventType == TriggerData.EVENT_TYPE.Amount ? "amount" : "word";
+            triggerRecord.amount = trigger.Amount.ToString(CultureInfo.InvariantCulture);
+            triggerRecord.word = trigger.Word ?? string.Empty;
+            triggerRecord.findType = trigger.Findtype.ToString().ToLowerInvariant();
+            triggerRecord.eventList = new List<EventDataRecord>();
+
+            if (trigger.EventList != null)
+            {
+                for (int i = 0; i < trigger.EventList.Count; i++)
+                {
+                    EventData eventData = trigger.EventList[i];
+                    EventDataRecord eventRecord = new EventDataRecord();
+                    eventRecord.id = i + 1;
+                    eventRecord.path = eventData.Path ?? string.Empty;
+                    eventRecord.prefabType = eventData.PrefabType.ToString();
+                    eventRecord.parameters = BuildParameterRecord(eventData);
+                    triggerRecord.eventList.Add(eventRecord);
+                }
+            }
+
+            file.triggerDatas.Add(triggerRecord);
+        }
+
+        return file;
     }
 
+    private ParameterRecord BuildParameterRecord(EventData eventData)
+    {
+        Dictionary<string, string> parameters = BuildParameterMap(eventData.Parameters);
+
+        ParameterRecord record = new ParameterRecord();
+        record.lifeTime = parameters[EventData.PARAMETER_KEY.LIFETIME.ToString()];
+        record.size = parameters[EventData.PARAMETER_KEY.SIZE.ToString()];
+        record.posX = parameters[EventData.PARAMETER_KEY.POSITION_X.ToString()];
+        record.posY = parameters[EventData.PARAMETER_KEY.POSITION_Y.ToString()];
+        record.movX = parameters[EventData.PARAMETER_KEY.MOVEMENT_X.ToString()];
+        record.movY = parameters[EventData.PARAMETER_KEY.MOVEMENT_Y.ToString()];
+        return record;
+    }
+
+    private List<TriggerData> BuildTriggerDatasFromFile(TriggerDataFile file)
+    {
+        List<TriggerData> triggers = new List<TriggerData>();
+
+        foreach (TriggerDataRecord record in file.triggerDatas)
+        {
+            TriggerData trigger = new TriggerData();
+            trigger.Id = record.id;
+            trigger.EventType = ParseEventType(record.eventType, record.type);
+            trigger.Amount = ParseAmount(record.amount);
+            trigger.Word = record.word ?? string.Empty;
+            trigger.Findtype = ParseFindType(record.findType);
+            trigger.EventList = new List<EventData>();
+
+            if (record.eventList != null)
+            {
+                foreach (EventDataRecord eventRecord in record.eventList)
+                {
+                    EventData eventData = new EventData();
+                    eventData.ID = eventRecord.id;
+                    eventData.Path = eventRecord.path ?? string.Empty;
+                    eventData.PrefabType = ParsePrefabType(eventRecord.prefabType);
+                    eventData.Parameters = BuildParameterMap(eventRecord.parameters);
+                    trigger.EventList.Add(eventData);
+                }
+            }
+
+            RenumberEvents(trigger);
+            triggers.Add(trigger);
+        }
+
+        return triggers;
+    }
+
+    private Dictionary<string, string> BuildParameterMap(ParameterRecord record)
+    {
+        Dictionary<string, string> parameters = CreateDefaultParameterMap();
+        if (record == null)
+        {
+            return parameters;
+        }
+
+        parameters[EventData.PARAMETER_KEY.LIFETIME.ToString()] = record.lifeTime ?? string.Empty;
+        parameters[EventData.PARAMETER_KEY.SIZE.ToString()] = record.size ?? string.Empty;
+        parameters[EventData.PARAMETER_KEY.POSITION_X.ToString()] = record.posX ?? string.Empty;
+        parameters[EventData.PARAMETER_KEY.POSITION_Y.ToString()] = record.posY ?? string.Empty;
+        parameters[EventData.PARAMETER_KEY.MOVEMENT_X.ToString()] = record.movX ?? string.Empty;
+        parameters[EventData.PARAMETER_KEY.MOVEMENT_Y.ToString()] = record.movY ?? string.Empty;
+        return parameters;
+    }
+
+    private Dictionary<string, string> BuildParameterMap(Dictionary<string, string> source)
+    {
+        Dictionary<string, string> parameters = CreateDefaultParameterMap();
+        if (source == null)
+        {
+            return parameters;
+        }
+
+        foreach (KeyValuePair<string, string> entry in source)
+        {
+            parameters[entry.Key] = entry.Value ?? string.Empty;
+        }
+
+        return parameters;
+    }
+
+    private Dictionary<string, string> CreateDefaultParameterMap()
+    {
+        Dictionary<string, string> parameters = new Dictionary<string, string>();
+        parameters[EventData.PARAMETER_KEY.LIFETIME.ToString()] = "5";
+        parameters[EventData.PARAMETER_KEY.SIZE.ToString()] = "0.8";
+        parameters[EventData.PARAMETER_KEY.POSITION_X.ToString()] = string.Empty;
+        parameters[EventData.PARAMETER_KEY.POSITION_Y.ToString()] = string.Empty;
+        parameters[EventData.PARAMETER_KEY.MOVEMENT_X.ToString()] = string.Empty;
+        parameters[EventData.PARAMETER_KEY.MOVEMENT_Y.ToString()] = string.Empty;
+        return parameters;
+    }
+
+    private void RenumberEvents(TriggerData trigger)
+    {
+        if (trigger.EventList == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < trigger.EventList.Count; i++)
+        {
+            trigger.EventList[i].ID = i + 1;
+        }
+    }
+
+    private TriggerData.EVENT_TYPE ParseEventType(string eventType, string legacyType)
+    {
+        string raw = !string.IsNullOrEmpty(eventType) ? eventType : legacyType;
+        string value = (raw ?? string.Empty).ToLowerInvariant();
+        if (value == "amount")
+        {
+            return TriggerData.EVENT_TYPE.Amount;
+        }
+
+        return TriggerData.EVENT_TYPE.Word;
+    }
+
+    private decimal ParseAmount(string raw)
+    {
+        decimal amount;
+        if (decimal.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out amount))
+        {
+            return amount;
+        }
+
+        return 0m;
+    }
+
+    private TriggerData.FINDT_YPE ParseFindType(string raw)
+    {
+        string value = (raw ?? string.Empty).ToLowerInvariant();
+        switch (value)
+        {
+            case "prefix":
+                return TriggerData.FINDT_YPE.Prefix;
+            case "sufix":
+            case "suffix":
+                return TriggerData.FINDT_YPE.Sufix;
+            case "perfect":
+                return TriggerData.FINDT_YPE.Perfect;
+            case "partial":
+            default:
+                return TriggerData.FINDT_YPE.Partial;
+        }
+    }
+
+    private EventData.PREFAB_TYPE ParsePrefabType(string raw)
+    {
+        if (string.IsNullOrEmpty(raw))
+        {
+            return EventData.PREFAB_TYPE.FallSprite;
+        }
+
+        object parsed;
+        if (Enum.TryParse(typeof(EventData.PREFAB_TYPE), raw, true, out parsed))
+        {
+            return (EventData.PREFAB_TYPE)parsed;
+        }
+
+        return EventData.PREFAB_TYPE.FallSprite;
+    }
+
+    private string ResolveSettingsReadPath()
+    {
+        if (File.Exists(_settingsFilePath))
+        {
+            return _settingsFilePath;
+        }
+
+        if (File.Exists(_legacySettingsFilePath))
+        {
+            return _legacySettingsFilePath;
+        }
+
+        return string.Empty;
+    }
 }
