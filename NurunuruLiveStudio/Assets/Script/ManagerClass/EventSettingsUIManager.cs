@@ -15,6 +15,8 @@ namespace Unage
     {
         // ダブルクリック判定の許容秒数
         private const float DoubleClickThresholdSeconds = 0.3f;
+        // 保存完了メッセージの表示秒数
+        private const int SaveMessageDurationMilliseconds = 1500;
 
         // 設定データ本体とUIルート
         private SettingData _settingData;
@@ -41,12 +43,15 @@ namespace Unage
         // モーダルUI部品とコールバック
         private VisualElement _modalOverlay;
         private Label _modalMessageLabel;
+        private VisualElement _modalButtonsContainer;
         private Button _modalYesButton;
         private Button _modalNoButton;
         private Button _modalCancelButton;
         private Action _modalYesAction;
         private Action _modalNoAction;
         private Action _modalCancelAction;
+        private int _modalStateToken;
+        private bool _isAutoCloseModal;
 
         /// <summary>
         /// シーン内に本コンポーネントが存在しない場合、自動生成する。
@@ -54,8 +59,7 @@ namespace Unage
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureInstance()
         {
-            // ここはFindObjectByTypeではなくFindAnyObjectByTypeを使用する
-            if (FindAnyObjectByType<EventSettingsUIManager>() != null)
+            if (FindObjectOfType<EventSettingsUIManager>() != null)
             {
                 return;
             }
@@ -114,8 +118,7 @@ namespace Unage
         {
             if (_settingData == null)
             {
-                // ここはFindObjectByTypeではなくFindAnyObjectByTypeを使用する
-                _settingData = FindAnyObjectByType<SettingData>();
+                _settingData = FindObjectOfType<SettingData>();
             }
         }
 
@@ -368,6 +371,7 @@ namespace Unage
             buttons.style.flexDirection = FlexDirection.Row;
             buttons.style.justifyContent = Justify.FlexEnd;
             modalPanel.Add(buttons);
+            _modalButtonsContainer = buttons;
 
             _modalYesButton = new Button(OnModalYesClicked);
             _modalYesButton.text = "はい";
@@ -387,6 +391,35 @@ namespace Unage
             buttons.Add(_modalCancelButton);
 
             HideModal();
+        }
+
+        /// <summary>
+        /// 保存完了を知らせる一時メッセージモーダルを表示する。
+        /// </summary>
+        private void ShowSavedMessageModal()
+        {
+            _modalStateToken += 1;
+            int token = _modalStateToken;
+            _isAutoCloseModal = true;
+
+            _modalMessageLabel.text = "保存しました";
+            _modalButtonsContainer.style.display = DisplayStyle.None;
+            _modalYesButton.style.display = DisplayStyle.None;
+            _modalNoButton.style.display = DisplayStyle.None;
+            _modalCancelButton.style.display = DisplayStyle.None;
+
+            _modalYesAction = null;
+            _modalNoAction = null;
+            _modalCancelAction = null;
+            _modalOverlay.style.display = DisplayStyle.Flex;
+
+            _modalOverlay.schedule.Execute((Action)delegate
+            {
+                if (_isAutoCloseModal && _modalStateToken == token)
+                {
+                    HideModal();
+                }
+            }).StartingIn(SaveMessageDurationMilliseconds);
         }
 
         /// <summary>
@@ -449,6 +482,7 @@ namespace Unage
             _settingData.TriggerDatas = CloneTriggerDatas(_editingTriggerDatas);
             _settingData.SaveEventData();
             _isDirty = false;
+            ShowSavedMessageModal();
         }
 
         /// <summary>
@@ -1271,10 +1305,15 @@ namespace Unage
         /// </summary>
         private void ShowModal(string message, string yesText, string noText, string cancelText, Action yesAction, Action noAction, Action cancelAction)
         {
+            _modalStateToken += 1;
+            _isAutoCloseModal = false;
             _modalMessageLabel.text = message;
             _modalYesButton.text = string.IsNullOrEmpty(yesText) ? "はい" : yesText;
             _modalNoButton.text = string.IsNullOrEmpty(noText) ? "いいえ" : noText;
             _modalCancelButton.text = string.IsNullOrEmpty(cancelText) ? "キャンセル" : cancelText;
+            _modalButtonsContainer.style.display = DisplayStyle.Flex;
+            _modalYesButton.style.display = yesAction == null ? DisplayStyle.None : DisplayStyle.Flex;
+            _modalNoButton.style.display = noAction == null ? DisplayStyle.None : DisplayStyle.Flex;
             _modalCancelButton.style.display = cancelAction == null ? DisplayStyle.None : DisplayStyle.Flex;
 
             _modalYesAction = yesAction;
@@ -1288,6 +1327,8 @@ namespace Unage
         /// </summary>
         private void HideModal()
         {
+            _modalStateToken += 1;
+            _isAutoCloseModal = false;
             _modalOverlay.style.display = DisplayStyle.None;
             _modalYesAction = null;
             _modalNoAction = null;
