@@ -7,28 +7,38 @@ using UnityEngine.UIElements;
 
 namespace Unage
 {
+    /// <summary>
+    /// UI Toolkit でイベント設定画面を表示・編集するマネージャ。
+    /// 設定値の永続化は SettingData に委譲する。
+    /// </summary>
     public class EventSettingsUIManager : MonoBehaviour
     {
+        // ダブルクリック判定の許容秒数
         private const float DoubleClickThresholdSeconds = 0.3f;
 
+        // 設定データ本体とUIルート
         private SettingData _settingData;
         private UIDocument _document;
 
+        // 画面表示状態
         private bool _isSettingsButtonVisible;
         private bool _isWindowVisible;
         private bool _isDirty;
         private float _lastClickTime = -10f;
 
+        // 編集対象（編集中のみ保持するワークコピー）
         private List<TriggerData> _editingTriggerDatas = new List<TriggerData>();
         private TriggerData _selectedTrigger;
         private EventData _selectedEvent;
         private TriggerData _pendingDeleteTrigger;
 
+        // メインUI部品
         private Button _settingsLauncherButton;
         private VisualElement _windowRoot;
         private ScrollView _triggerListView;
         private ScrollView _editorView;
 
+        // モーダルUI部品とコールバック
         private VisualElement _modalOverlay;
         private Label _modalMessageLabel;
         private Button _modalYesButton;
@@ -38,9 +48,13 @@ namespace Unage
         private Action _modalNoAction;
         private Action _modalCancelAction;
 
+        /// <summary>
+        /// シーン内に本コンポーネントが存在しない場合、自動生成する。
+        /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureInstance()
         {
+            // ここはFindObjectByTypeではなくFindAnyObjectByTypeを使用する
             if (FindAnyObjectByType<EventSettingsUIManager>() != null)
             {
                 return;
@@ -50,6 +64,9 @@ namespace Unage
             managerObject.AddComponent<EventSettingsUIManager>();
         }
 
+        /// <summary>
+        /// 依存コンポーネント解決とUI初期化を行う。
+        /// </summary>
         private void Awake()
         {
             ResolveSettingData();
@@ -58,6 +75,9 @@ namespace Unage
             UpdateVisibility();
         }
 
+        /// <summary>
+        /// 左クリック入力からダブルクリックを検出し、設定ボタン表示をトグルする。
+        /// </summary>
         private void Update()
         {
             if (_isWindowVisible)
@@ -87,14 +107,21 @@ namespace Unage
             _lastClickTime = now;
         }
 
+        /// <summary>
+        /// シーン上の SettingData を探索して参照を保持する。
+        /// </summary>
         private void ResolveSettingData()
         {
             if (_settingData == null)
             {
+                // ここはFindObjectByTypeではなくFindAnyObjectByTypeを使用する
                 _settingData = FindAnyObjectByType<SettingData>();
             }
         }
 
+        /// <summary>
+        /// UIDocument と PanelSettings を保証する。
+        /// </summary>
         private void EnsureDocument()
         {
             _document = GetComponent<UIDocument>();
@@ -125,6 +152,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// 既存UIDocumentから再利用可能な PanelSettings を探す。
+        /// </summary>
         private PanelSettings FindReusablePanelSettings()
         {
             UIDocument[] sceneDocuments = FindObjectsOfType<UIDocument>();
@@ -160,6 +190,9 @@ namespace Unage
             return null;
         }
 
+        /// <summary>
+        /// 利用可能な ThemeStyleSheet を解決する。
+        /// </summary>
         private ThemeStyleSheet TryResolveThemeStyleSheet()
         {
             ThemeStyleSheet[] loadedThemes = Resources.FindObjectsOfTypeAll<ThemeStyleSheet>();
@@ -200,6 +233,9 @@ namespace Unage
             return null;
         }
 
+        /// <summary>
+        /// 設定画面本体のUIツリーを構築する。
+        /// </summary>
         private void BuildUi()
         {
             VisualElement root = _document.rootVisualElement;
@@ -221,7 +257,8 @@ namespace Unage
             _windowRoot.style.top = Length.Percent(8);
             _windowRoot.style.width = Length.Percent(84);
             _windowRoot.style.height = Length.Percent(84);
-            _windowRoot.style.backgroundColor = new Color(0.95f, 0.95f, 0.95f, 0.80f);
+            _windowRoot.style.backgroundColor = Color.white;
+            _windowRoot.style.color = Color.black;
             _windowRoot.style.borderBottomColor = Color.gray;
             _windowRoot.style.borderTopColor = Color.gray;
             _windowRoot.style.borderLeftColor = Color.gray;
@@ -286,6 +323,9 @@ namespace Unage
             BuildModal(root);
         }
 
+        /// <summary>
+        /// 汎用確認モーダルを構築する。
+        /// </summary>
         private void BuildModal(VisualElement root)
         {
             _modalOverlay = new VisualElement();
@@ -303,7 +343,8 @@ namespace Unage
             modalPanel.style.top = Length.Percent(36);
             modalPanel.style.width = Length.Percent(36);
             modalPanel.style.height = 140f;
-            modalPanel.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+            modalPanel.style.backgroundColor = Color.white;
+            modalPanel.style.color = Color.black;
             modalPanel.style.borderBottomColor = Color.gray;
             modalPanel.style.borderTopColor = Color.gray;
             modalPanel.style.borderLeftColor = Color.gray;
@@ -348,6 +389,9 @@ namespace Unage
             HideModal();
         }
 
+        /// <summary>
+        /// 設定ボタン押下時にワークコピーを作成して設定ウィンドウを開く。
+        /// </summary>
         private void OnSettingsLauncherClicked()
         {
             ResolveSettingData();
@@ -368,6 +412,9 @@ namespace Unage
             RefreshEditor();
         }
 
+        /// <summary>
+        /// TriggerData を1件追加して編集対象にする。
+        /// </summary>
         private void OnAddTriggerClicked()
         {
             TriggerData trigger = new TriggerData();
@@ -387,6 +434,9 @@ namespace Unage
             RefreshEditor();
         }
 
+        /// <summary>
+        /// ワークコピー内容を SettingData へ反映して保存する。
+        /// </summary>
         private void OnSaveClicked()
         {
             ResolveSettingData();
@@ -401,6 +451,9 @@ namespace Unage
             _isDirty = false;
         }
 
+        /// <summary>
+        /// 閉じる押下時の処理。未保存がある場合は確認モーダルを表示する。
+        /// </summary>
         private void OnCloseClicked()
         {
             if (_isDirty)
@@ -429,6 +482,9 @@ namespace Unage
             CloseWindow();
         }
 
+        /// <summary>
+        /// 設定ウィンドウを閉じ、編集状態を初期化する。
+        /// </summary>
         private void CloseWindow()
         {
             HideModal();
@@ -440,6 +496,9 @@ namespace Unage
             UpdateVisibility();
         }
 
+        /// <summary>
+        /// 左ペインの Trigger/Event リストを再描画する。
+        /// </summary>
         private void RefreshTriggerList()
         {
             _triggerListView.Clear();
@@ -456,6 +515,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// TriggerData 1行分の表示要素を生成する。
+        /// </summary>
         private VisualElement CreateTriggerRow(TriggerData trigger)
         {
             VisualElement row = new VisualElement();
@@ -514,6 +576,9 @@ namespace Unage
             return row;
         }
 
+        /// <summary>
+        /// 選択中 TriggerData の EventData 行を展開表示する。
+        /// </summary>
         private void AddEventRows(TriggerData trigger)
         {
             if (trigger.EventList == null)
@@ -563,6 +628,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// 右ペイン編集エリアを選択状態に応じて再構築する。
+        /// </summary>
         private void RefreshEditor()
         {
             _editorView.Clear();
@@ -579,6 +647,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// TriggerData 編集UIを構築する。
+        /// </summary>
         private void BuildTriggerEditor(TriggerData trigger)
         {
             _editorView.Add(new Label("TriggerData"));
@@ -589,10 +660,13 @@ namespace Unage
 
             TextField amountField = new TextField("amount");
             amountField.value = trigger.Amount.ToString("0", CultureInfo.InvariantCulture);
+            amountField.isDelayed = true;
+            ApplyTextFieldStyle(amountField);
             _editorView.Add(amountField);
 
             TextField wordField = new TextField("word");
             wordField.value = trigger.Word ?? string.Empty;
+            ApplyTextFieldStyle(wordField);
             _editorView.Add(wordField);
 
             DropdownField findField = new DropdownField("findType", new List<string> { "Partial", "Perfect", "Prefix", "Sufix" }, FindTypeToIndex(trigger.Findtype));
@@ -634,8 +708,12 @@ namespace Unage
                 {
                     trigger.Word = next;
                     _isDirty = true;
-                    RefreshTriggerList();
                 }
+            });
+
+            wordField.RegisterCallback<FocusOutEvent>(delegate
+            {
+                RefreshTriggerList();
             });
 
             findField.RegisterValueChangedCallback(delegate(ChangeEvent<string> evt)
@@ -651,6 +729,9 @@ namespace Unage
             UpdateTriggerFieldVisibility(trigger, amountField, wordField);
         }
 
+        /// <summary>
+        /// EventData 編集UIを構築する。
+        /// </summary>
         private void BuildEventEditor(EventData eventData)
         {
             _editorView.Add(new Label("EventData"));
@@ -658,6 +739,7 @@ namespace Unage
 
             TextField pathField = new TextField("path");
             pathField.value = eventData.Path ?? string.Empty;
+            ApplyTextFieldStyle(pathField);
             _editorView.Add(pathField);
 
             Button pathButton = new Button(delegate
@@ -705,8 +787,12 @@ namespace Unage
                 {
                     eventData.Path = next;
                     _isDirty = true;
-                    RefreshTriggerList();
                 }
+            });
+
+            pathField.RegisterCallback<FocusOutEvent>(delegate
+            {
+                RefreshTriggerList();
             });
 
             prefabField.RegisterValueChangedCallback(delegate(ChangeEvent<string> evt)
@@ -724,6 +810,9 @@ namespace Unage
             UpdateEventFieldVisibility(eventData, posXField, posYField, movXField, movYField);
         }
 
+        /// <summary>
+        /// Trigger の種別に応じて amount/word 入力欄の表示を切り替える。
+        /// </summary>
         private void UpdateTriggerFieldVisibility(TriggerData trigger, VisualElement amountField, VisualElement wordField)
         {
             bool isAmount = trigger.EventType == TriggerData.EVENT_TYPE.Amount;
@@ -731,6 +820,9 @@ namespace Unage
             wordField.style.display = isAmount ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
+        /// <summary>
+        /// FallSprite の場合のみ座標・移動量欄を非表示にする。
+        /// </summary>
         private void UpdateEventFieldVisibility(EventData eventData, VisualElement posXField, VisualElement posYField, VisualElement movXField, VisualElement movYField)
         {
             bool isFall = eventData.PrefabType == EventData.PREFAB_TYPE.FallSprite;
@@ -741,10 +833,15 @@ namespace Unage
             movYField.style.display = style;
         }
 
+        /// <summary>
+        /// 整数パラメータ編集用の TextField を作成する。
+        /// </summary>
         private TextField CreateIntegerParameterField(EventData eventData, EventData.PARAMETER_KEY key, string label, bool allowEmpty)
         {
             TextField field = new TextField(label);
             field.value = GetParameter(eventData, key);
+            field.isDelayed = true;
+            ApplyTextFieldStyle(field);
             field.RegisterValueChangedCallback(delegate(ChangeEvent<string> evt)
             {
                 string next = evt.newValue ?? string.Empty;
@@ -766,10 +863,15 @@ namespace Unage
             return field;
         }
 
+        /// <summary>
+        /// 小数パラメータ編集用の TextField を作成する。
+        /// </summary>
         private TextField CreateDecimalParameterField(EventData eventData, EventData.PARAMETER_KEY key, string label, bool allowEmpty, bool allowNegative)
         {
             TextField field = new TextField(label);
             field.value = GetParameter(eventData, key);
+            field.isDelayed = true;
+            ApplyTextFieldStyle(field);
             field.RegisterValueChangedCallback(delegate(ChangeEvent<string> evt)
             {
                 string next = evt.newValue ?? string.Empty;
@@ -780,7 +882,7 @@ namespace Unage
                 }
 
                 decimal parsed;
-                if (!decimal.TryParse(next, NumberStyles.Float, CultureInfo.InvariantCulture, out parsed))
+                if (!TryParseDecimal(next, out parsed))
                 {
                     field.SetValueWithoutNotify(GetParameter(eventData, key));
                     return;
@@ -800,6 +902,44 @@ namespace Unage
             return field;
         }
 
+        /// <summary>
+        /// 入力欄の色・文字配置を明示設定し、見た目の差異を抑える。
+        /// </summary>
+        private void ApplyTextFieldStyle(TextField field)
+        {
+            field.style.color = Color.black;
+            field.style.unityTextAlign = TextAnchor.MiddleLeft;
+
+            VisualElement input = field.Q("unity-text-input");
+            if (input != null)
+            {
+                input.style.color = Color.black;
+                input.style.backgroundColor = Color.white;
+            }
+        }
+
+        /// <summary>
+        /// 小数文字列を文化依存差（. / ,）に配慮して解析する。
+        /// </summary>
+        private bool TryParseDecimal(string raw, out decimal value)
+        {
+            if (decimal.TryParse(raw, NumberStyles.Float, CultureInfo.CurrentCulture, out value))
+            {
+                return true;
+            }
+
+            if (decimal.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+            {
+                return true;
+            }
+
+            string normalized = (raw ?? string.Empty).Replace(',', '.');
+            return decimal.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+        }
+
+        /// <summary>
+        /// 選択中 TriggerData に EventData を1件追加する。
+        /// </summary>
         private void AddEvent(TriggerData trigger)
         {
             if (trigger.EventList == null)
@@ -822,6 +962,9 @@ namespace Unage
             RefreshEditor();
         }
 
+        /// <summary>
+        /// EventData を複製し、同一 TriggerData 内に追加する。
+        /// </summary>
         private void DuplicateEvent(TriggerData trigger, EventData source)
         {
             if (trigger.EventList == null)
@@ -844,6 +987,9 @@ namespace Unage
             RefreshEditor();
         }
 
+        /// <summary>
+        /// EventData を削除し、必要な採番を更新する。
+        /// </summary>
         private void RemoveEvent(TriggerData trigger, EventData eventData)
         {
             if (trigger.EventList == null)
@@ -864,6 +1010,9 @@ namespace Unage
             RefreshEditor();
         }
 
+        /// <summary>
+        /// TriggerData（配下の EventData 含む）を削除する。
+        /// </summary>
         private void RemoveTrigger(TriggerData trigger)
         {
             if (trigger == null)
@@ -884,6 +1033,9 @@ namespace Unage
             RefreshEditor();
         }
 
+        /// <summary>
+        /// TriggerData 配下 EventData のIDを1始まりで振り直す。
+        /// </summary>
         private void RenumberEvents(TriggerData trigger)
         {
             if (trigger.EventList == null)
@@ -897,6 +1049,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// EventData.Parameters の必須キーを補完する。
+        /// </summary>
         private void EnsureEventParameters(EventData eventData)
         {
             if (eventData.Parameters == null)
@@ -912,6 +1067,9 @@ namespace Unage
             EnsureParameterKey(eventData, EventData.PARAMETER_KEY.MOVEMENT_Y);
         }
 
+        /// <summary>
+        /// 指定キーが存在しない場合は空文字で追加する。
+        /// </summary>
         private void EnsureParameterKey(EventData eventData, EventData.PARAMETER_KEY key)
         {
             string mapKey = key.ToString();
@@ -921,12 +1079,18 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// Parameters から指定キー値を取得する（不足キーは補完）。
+        /// </summary>
         private string GetParameter(EventData eventData, EventData.PARAMETER_KEY key)
         {
             EnsureEventParameters(eventData);
             return eventData.Parameters[key.ToString()] ?? string.Empty;
         }
 
+        /// <summary>
+        /// Parameters に値を設定し、変更がある場合のみ dirty にする。
+        /// </summary>
         private void SetParameter(EventData eventData, EventData.PARAMETER_KEY key, string value)
         {
             EnsureEventParameters(eventData);
@@ -943,11 +1107,14 @@ namespace Unage
             _isDirty = true;
         }
 
+        /// <summary>
+        /// EventData パラメータのデフォルト値マップを生成する。
+        /// </summary>
         private Dictionary<string, string> CreateDefaultParameterMap()
         {
             Dictionary<string, string> map = new Dictionary<string, string>();
             map[EventData.PARAMETER_KEY.LIFETIME.ToString()] = "5";
-            map[EventData.PARAMETER_KEY.SIZE.ToString()] = "1";
+            map[EventData.PARAMETER_KEY.SIZE.ToString()] = "0.8";
             map[EventData.PARAMETER_KEY.POSITION_X.ToString()] = string.Empty;
             map[EventData.PARAMETER_KEY.POSITION_Y.ToString()] = string.Empty;
             map[EventData.PARAMETER_KEY.MOVEMENT_X.ToString()] = string.Empty;
@@ -955,6 +1122,9 @@ namespace Unage
             return map;
         }
 
+        /// <summary>
+        /// パラメータ辞書を安全に複製する。
+        /// </summary>
         private Dictionary<string, string> CloneParameterMap(Dictionary<string, string> source)
         {
             Dictionary<string, string> map = CreateDefaultParameterMap();
@@ -971,6 +1141,9 @@ namespace Unage
             return map;
         }
 
+        /// <summary>
+        /// TriggerData 一式を編集用にディープコピーする。
+        /// </summary>
         private List<TriggerData> CloneTriggerDatas(List<TriggerData> source)
         {
             List<TriggerData> list = new List<TriggerData>();
@@ -1009,6 +1182,9 @@ namespace Unage
             return list;
         }
 
+        /// <summary>
+        /// 新規 TriggerData 用のIDを生成（既存ID重複回避）。
+        /// </summary>
         private int GenerateTriggerId()
         {
             int id;
@@ -1035,6 +1211,9 @@ namespace Unage
             return id;
         }
 
+        /// <summary>
+        /// FindType を Dropdown の選択インデックスへ変換する。
+        /// </summary>
         private int FindTypeToIndex(TriggerData.FINDT_YPE findType)
         {
             switch (findType)
@@ -1052,6 +1231,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// Dropdown の文字列値を FindType に変換する。
+        /// </summary>
         private TriggerData.FINDT_YPE ParseFindType(string value)
         {
             switch ((value ?? string.Empty).ToLowerInvariant())
@@ -1069,6 +1251,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// 画像ファイル選択ダイアログを開く（Editorのみ）。
+        /// </summary>
         private bool TrySelectImagePath(out string selectedPath)
         {
 #if UNITY_EDITOR
@@ -1081,6 +1266,9 @@ namespace Unage
 #endif
         }
 
+        /// <summary>
+        /// 確認モーダルを表示し、各ボタンに実行アクションを紐づける。
+        /// </summary>
         private void ShowModal(string message, string yesText, string noText, string cancelText, Action yesAction, Action noAction, Action cancelAction)
         {
             _modalMessageLabel.text = message;
@@ -1095,6 +1283,9 @@ namespace Unage
             _modalOverlay.style.display = DisplayStyle.Flex;
         }
 
+        /// <summary>
+        /// モーダル表示を閉じ、関連アクション参照をクリアする。
+        /// </summary>
         private void HideModal()
         {
             _modalOverlay.style.display = DisplayStyle.None;
@@ -1103,6 +1294,9 @@ namespace Unage
             _modalCancelAction = null;
         }
 
+        /// <summary>
+        /// モーダルの「はい」押下時処理。
+        /// </summary>
         private void OnModalYesClicked()
         {
             Action action = _modalYesAction;
@@ -1112,6 +1306,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// モーダルの「いいえ」押下時処理。
+        /// </summary>
         private void OnModalNoClicked()
         {
             Action action = _modalNoAction;
@@ -1121,6 +1318,9 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// モーダルの「キャンセル」押下時処理。
+        /// </summary>
         private void OnModalCancelClicked()
         {
             Action action = _modalCancelAction;
@@ -1130,12 +1330,18 @@ namespace Unage
             }
         }
 
+        /// <summary>
+        /// ランチャーボタンと設定ウィンドウの表示状態を反映する。
+        /// </summary>
         private void UpdateVisibility()
         {
             _settingsLauncherButton.style.display = _isSettingsButtonVisible ? DisplayStyle.Flex : DisplayStyle.None;
             _windowRoot.style.display = _isWindowVisible ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
+        /// <summary>
+        /// 左クリック押下を入力システム差分を吸収して判定する。
+        /// </summary>
         private bool IsLeftClickDown()
         {
 #if ENABLE_INPUT_SYSTEM

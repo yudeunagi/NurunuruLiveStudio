@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,26 +6,31 @@ using UnityEngine;
 using Unage;
 
 /// <summary>
-/// 各種設定を扱う
+/// トリガー設定データの永続化（JSON保存・読込）を担当する。
 /// </summary>
 public class SettingData : MonoBehaviour
 {
+    // 保存ファイル名
     private const string SettingsFileName = "triggerDatas.json";
 
-    // トリガーに関するデータ
+    // 現在有効なトリガー設定
     private List<TriggerData> _triggerDatas = new List<TriggerData>();
+    // 現行の保存先（永続データ領域）
     private string _settingsFilePath;
+    // 旧保存先互換（Assets直下）
     private string _legacySettingsFilePath;
 
     [Serializable]
     private class TriggerDataFile
     {
+        // ルート要素
         public List<TriggerDataRecord> triggerDatas = new List<TriggerDataRecord>();
     }
 
     [Serializable]
     private class TriggerDataRecord
     {
+        // TriggerData 1件分のシリアライズ用DTO
         public int id;
         public string eventType;
         public string type;
@@ -38,6 +43,7 @@ public class SettingData : MonoBehaviour
     [Serializable]
     private class EventDataRecord
     {
+        // EventData 1件分のシリアライズ用DTO
         public int id;
         public string path;
         public string prefabType;
@@ -47,6 +53,7 @@ public class SettingData : MonoBehaviour
     [Serializable]
     private class ParameterRecord
     {
+        // EventData.Parameters のJSON表現
         public string lifeTime;
         public string size;
         public string posX;
@@ -55,15 +62,19 @@ public class SettingData : MonoBehaviour
         public string movY;
     }
 
-    // 以下アクセサ
+    // 外部参照用アクセサ
     public List<TriggerData> TriggerDatas
     {
         get { return _triggerDatas; }
         set { _triggerDatas = value; }
     }
 
+    /// <summary>
+    /// 保存先パスを初期化する。
+    /// </summary>
     private void Awake()
     {
+        // 永続データ領域のパスを設定
         _settingsFilePath = Path.Combine(Application.persistentDataPath, SettingsFileName);
         _legacySettingsFilePath = Path.Combine(Application.dataPath, SettingsFileName);
     }
@@ -81,15 +92,20 @@ public class SettingData : MonoBehaviour
     /// </summary>
     public void SaveEventData()
     {
+        // _triggerDatas を保存用DTOに変換
         TriggerDataFile file = BuildFileFromTriggerDatas();
+        // 保存用DTO を JSON 文字列に変換
         string json = JsonUtility.ToJson(file, true);
 
+        // 保存ファイルディレクトリを取得
         string directory = Path.GetDirectoryName(_settingsFilePath);
         if (!string.IsNullOrEmpty(directory))
         {
+            // ディレクトリが存在しない場合は作成
             Directory.CreateDirectory(directory);
         }
 
+        // JSON文字列を保存ファイルに書き込む
         File.WriteAllText(_settingsFilePath, json);
     }
 
@@ -98,52 +114,63 @@ public class SettingData : MonoBehaviour
     /// </summary>
     public void LoadEventData()
     {
+        // 設定ファイルのパス取得
         string readPath = ResolveSettingsReadPath();
+
+        // 設定ファイルが存在するか確認
         if (string.IsNullOrEmpty(readPath))
         {
+            // 設定ファイルが存在しない場合はモックデータをロード
             LoadMockTriggerData();
             return;
         }
 
+        // 設定ファイルの内容を読み込む
         string json = File.ReadAllText(readPath);
+        // 設定ファイルの内容が空かどうか確認
         if (string.IsNullOrWhiteSpace(json))
         {
+            // 設定ファイルの内容が空の場合はモックデータをロード
             LoadMockTriggerData();
             return;
         }
 
+        // JSON文字列をTriggerDataFileオブジェクトに変換
         TriggerDataFile file = JsonUtility.FromJson<TriggerDataFile>(json);
         if (file == null || file.triggerDatas == null)
         {
+            // 設定ファイルの内容が不正な場合はモックデータをロード
             LoadMockTriggerData();
             return;
         }
 
+        // ファイルから読み込んだデータをメモリ上の TriggerData 一式へ変換
         _triggerDatas = BuildTriggerDatasFromFile(file);
     }
 
     /// <summary>
-    /// イベントデータのロード
+    /// モックのイベントデータをロード
     /// </summary>
-    public void LoadMockEventData()
-    {
-        LoadMockTriggerData();
-    }
-
     public void LoadMockTriggerData()
     {
         TriggerDatas = DummyData.LoadNewMockTriggerData();
     }
 
+    /// <summary>
+    /// メモリ上の TriggerData 一式を保存用DTOへ変換する。
+    /// </summary>
     private TriggerDataFile BuildFileFromTriggerDatas()
     {
         TriggerDataFile file = new TriggerDataFile();
 
+        // メモリ上の TriggerData 一式を保存用DTOへ変換
         foreach (TriggerData trigger in _triggerDatas)
         {
             TriggerDataRecord triggerRecord = new TriggerDataRecord();
             triggerRecord.id = trigger.Id;
-            triggerRecord.eventType = trigger.EventType == TriggerData.EVENT_TYPE.Amount ? "amount" : "word";
+            // eventType を文字列に変換
+            triggerRecord.eventType = trigger.EventType.ToString().ToLowerInvariant();
+            // triggerRecord.eventType = trigger.EventType == TriggerData.EVENT_TYPE.Amount ? "amount" : "word";
             triggerRecord.amount = trigger.Amount.ToString(CultureInfo.InvariantCulture);
             triggerRecord.word = trigger.Word ?? string.Empty;
             triggerRecord.findType = trigger.Findtype.ToString().ToLowerInvariant();
@@ -151,6 +178,7 @@ public class SettingData : MonoBehaviour
 
             if (trigger.EventList != null)
             {
+                // イベントデータを保存用DTOへ変換
                 for (int i = 0; i < trigger.EventList.Count; i++)
                 {
                     EventData eventData = trigger.EventList[i];
@@ -158,6 +186,7 @@ public class SettingData : MonoBehaviour
                     eventRecord.id = i + 1;
                     eventRecord.path = eventData.Path ?? string.Empty;
                     eventRecord.prefabType = eventData.PrefabType.ToString();
+                    // parameters を保存用DTOへ変換
                     eventRecord.parameters = BuildParameterRecord(eventData);
                     triggerRecord.eventList.Add(eventRecord);
                 }
@@ -169,8 +198,12 @@ public class SettingData : MonoBehaviour
         return file;
     }
 
+    /// <summary>
+    /// EventData.Parameters を保存用の固定キー構造へ変換する。
+    /// </summary>
     private ParameterRecord BuildParameterRecord(EventData eventData)
     {
+        // EventData.Parameters を辞書形式に変換
         Dictionary<string, string> parameters = BuildParameterMap(eventData.Parameters);
 
         ParameterRecord record = new ParameterRecord();
@@ -183,10 +216,14 @@ public class SettingData : MonoBehaviour
         return record;
     }
 
+    /// <summary>
+    /// 読み込んだ保存DTOを実行時の TriggerData 構造へ復元する。
+    /// </summary>
     private List<TriggerData> BuildTriggerDatasFromFile(TriggerDataFile file)
     {
         List<TriggerData> triggers = new List<TriggerData>();
 
+        // ファイルから読み込んだ TriggerDataFile を実行時の TriggerData 構造へ復元
         foreach (TriggerDataRecord record in file.triggerDatas)
         {
             TriggerData trigger = new TriggerData();
@@ -205,7 +242,7 @@ public class SettingData : MonoBehaviour
                     eventData.ID = eventRecord.id;
                     eventData.Path = eventRecord.path ?? string.Empty;
                     eventData.PrefabType = ParsePrefabType(eventRecord.prefabType);
-                    eventData.Parameters = BuildParameterMap(eventRecord.parameters);
+                    eventData.Parameters = LoadAndBuildParameterMap(eventRecord.parameters);
                     trigger.EventList.Add(eventData);
                 }
             }
@@ -217,8 +254,14 @@ public class SettingData : MonoBehaviour
         return triggers;
     }
 
-    private Dictionary<string, string> BuildParameterMap(ParameterRecord record)
+    /// <summary>
+    /// ファイルロード時に使用するメソッド
+    /// JSONの parameters オブジェクトを辞書へ展開する。
+    /// </summary>
+    private Dictionary<string, string> LoadAndBuildParameterMap(ParameterRecord record)
     {
+
+        // デフォルトパラメータを設定
         Dictionary<string, string> parameters = CreateDefaultParameterMap();
         if (record == null)
         {
@@ -234,6 +277,9 @@ public class SettingData : MonoBehaviour
         return parameters;
     }
 
+    /// <summary>
+    /// 既存辞書を不足キー補完つきで正規化する。
+    /// </summary>
     private Dictionary<string, string> BuildParameterMap(Dictionary<string, string> source)
     {
         Dictionary<string, string> parameters = CreateDefaultParameterMap();
@@ -250,11 +296,14 @@ public class SettingData : MonoBehaviour
         return parameters;
     }
 
+    /// <summary>
+    /// Parameters の初期値マップを生成する。
+    /// </summary>
     private Dictionary<string, string> CreateDefaultParameterMap()
     {
         Dictionary<string, string> parameters = new Dictionary<string, string>();
         parameters[EventData.PARAMETER_KEY.LIFETIME.ToString()] = "5";
-        parameters[EventData.PARAMETER_KEY.SIZE.ToString()] = "0.8";
+        parameters[EventData.PARAMETER_KEY.SIZE.ToString()] = "1";
         parameters[EventData.PARAMETER_KEY.POSITION_X.ToString()] = string.Empty;
         parameters[EventData.PARAMETER_KEY.POSITION_Y.ToString()] = string.Empty;
         parameters[EventData.PARAMETER_KEY.MOVEMENT_X.ToString()] = string.Empty;
@@ -262,6 +311,9 @@ public class SettingData : MonoBehaviour
         return parameters;
     }
 
+    /// <summary>
+    /// EventList のIDを1始まりの連番で採番し直す。
+    /// </summary>
     private void RenumberEvents(TriggerData trigger)
     {
         if (trigger.EventList == null)
@@ -275,10 +327,18 @@ public class SettingData : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 保存文字列を TriggerData.EVENT_TYPE に変換する。
+    /// </summary>
     private TriggerData.EVENT_TYPE ParseEventType(string eventType, string legacyType)
     {
+        // eventType が空の場合は legacyType を使用
         string raw = !string.IsNullOrEmpty(eventType) ? eventType : legacyType;
+        // 小文字に変換して比較するための値を取得
         string value = (raw ?? string.Empty).ToLowerInvariant();
+
+        // "amount" の場合は金額イベント、それ以外は単語イベントとみなす
+        // TODO: 将来的に他のイベントタイプの判定を追加する可能性あり
         if (value == "amount")
         {
             return TriggerData.EVENT_TYPE.Amount;
@@ -287,6 +347,9 @@ public class SettingData : MonoBehaviour
         return TriggerData.EVENT_TYPE.Word;
     }
 
+    /// <summary>
+    /// 保存文字列を金額(decimal)へ変換する。失敗時は0。
+    /// </summary>
     private decimal ParseAmount(string raw)
     {
         decimal amount;
@@ -298,6 +361,9 @@ public class SettingData : MonoBehaviour
         return 0m;
     }
 
+    /// <summary>
+    /// 保存文字列を FindType へ変換する（suffix/sufix表記ゆれを許容）。
+    /// </summary>
     private TriggerData.FINDT_YPE ParseFindType(string raw)
     {
         string value = (raw ?? string.Empty).ToLowerInvariant();
@@ -316,8 +382,12 @@ public class SettingData : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 保存文字列を PrefabType へ変換する。失敗時は FallSprite。
+    /// </summary>
     private EventData.PREFAB_TYPE ParsePrefabType(string raw)
     {
+        // 文字が空の場合はデフォルトの FallSprite を返す
         if (string.IsNullOrEmpty(raw))
         {
             return EventData.PREFAB_TYPE.FallSprite;
@@ -329,9 +399,13 @@ public class SettingData : MonoBehaviour
             return (EventData.PREFAB_TYPE)parsed;
         }
 
+        // Enumに変換できなかった場合もデフォルトの FallSprite を返す
         return EventData.PREFAB_TYPE.FallSprite;
     }
 
+    /// <summary>
+    /// 設定読込時に利用可能な保存ファイルパスを返す。
+    /// </summary>
     private string ResolveSettingsReadPath()
     {
         if (File.Exists(_settingsFilePath))

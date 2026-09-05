@@ -2,7 +2,7 @@
 	"triggerDatas": [
 		{
 			"id": "ID",
-			"type": "スパチャor単語",
+			"eventType": "スパチャor単語",
 			"amount": "金額",
 			"word": "発動ワード",
 			"eventList": [
