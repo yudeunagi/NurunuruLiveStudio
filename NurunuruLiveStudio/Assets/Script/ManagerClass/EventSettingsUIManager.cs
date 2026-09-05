@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -1286,18 +1287,21 @@ namespace Unage
         }
 
         /// <summary>
-        /// 画像ファイル選択ダイアログを開く（Editorのみ）。
+        /// 画像ファイル選択ダイアログを開く。
         /// </summary>
         private bool TrySelectImagePath(out string selectedPath)
         {
-#if UNITY_EDITOR
-            selectedPath = UnityEditor.EditorUtility.OpenFilePanel("画像ファイルを選択", "", "png,jpg,jpeg");
+            // 拡張子フィルタを設定する
+            var extensions = new [] {
+                new ExtensionFilter("Image Files", "png", "jpg", "jpeg" ),
+                new ExtensionFilter("All Files", "*" ),
+            };
+            // ファイル選択ダイアログを開く
+            var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, true);
+            // 選択されたファイルのパスを取得する
+            selectedPath = (paths != null && paths.Length > 0) ? paths[0] : string.Empty;
             return !string.IsNullOrEmpty(selectedPath);
-#else
-            selectedPath = string.Empty;
-            Debug.LogWarning("ファイル選択ダイアログは UNITY_EDITOR でのみ利用できます。");
-            return false;
-#endif
+
         }
 
         /// <summary>
