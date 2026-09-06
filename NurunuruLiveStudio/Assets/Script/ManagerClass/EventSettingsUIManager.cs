@@ -37,6 +37,7 @@ namespace Unage
 
         // メインUI部品
         private Button _settingsLauncherButton;
+        private Button _environmentLauncherButton;
         private VisualElement _windowRoot;
         private ScrollView _triggerListView;
         private ScrollView _editorView;
@@ -60,7 +61,7 @@ namespace Unage
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void EnsureInstance()
         {
-            if (FindObjectOfType<EventSettingsUIManager>() != null)
+            if (UnityEngine.Object.FindFirstObjectByType<EventSettingsUIManager>() != null)
             {
                 return;
             }
@@ -81,7 +82,7 @@ namespace Unage
         }
 
         /// <summary>
-        /// 左クリック入力からダブルクリックを検出し、設定ボタン表示をトグルする。
+        /// 左クリック入力からダブルクリックを検出し、設定ボタン群の表示をトグルする。
         /// </summary>
         private void Update()
         {
@@ -119,7 +120,7 @@ namespace Unage
         {
             if (_settingData == null)
             {
-                _settingData = FindObjectOfType<SettingData>();
+                _settingData = UnityEngine.Object.FindFirstObjectByType<SettingData>();
             }
         }
 
@@ -128,113 +129,7 @@ namespace Unage
         /// </summary>
         private void EnsureDocument()
         {
-            _document = GetComponent<UIDocument>();
-            if (_document == null)
-            {
-                _document = gameObject.AddComponent<UIDocument>();
-            }
-
-            if (_document.panelSettings == null)
-            {
-                PanelSettings panelSettings = FindReusablePanelSettings();
-                if (panelSettings == null)
-                {
-                    panelSettings = ScriptableObject.CreateInstance<PanelSettings>();
-                    panelSettings.sortingOrder = 1000;
-                    ThemeStyleSheet themeStyleSheet = TryResolveThemeStyleSheet();
-                    if (themeStyleSheet != null)
-                    {
-                        panelSettings.themeStyleSheet = themeStyleSheet;
-                    }
-                    else
-                    {
-                        Debug.LogWarning("PanelSettings の Theme Style Sheet が見つかりません。UIDocument を作成して UnityDefaultRuntimeTheme.tss を生成するか、Theme Style Sheet を持つ PanelSettings を既存 UIDocument に設定してください。");
-                    }
-                }
-
-                _document.panelSettings = panelSettings;
-            }
-        }
-
-        /// <summary>
-        /// 既存UIDocumentから再利用可能な PanelSettings を探す。
-        /// </summary>
-        private PanelSettings FindReusablePanelSettings()
-        {
-            UIDocument[] sceneDocuments = FindObjectsOfType<UIDocument>();
-            for (int i = 0; i < sceneDocuments.Length; i++)
-            {
-                UIDocument document = sceneDocuments[i];
-                if (document == null || document == _document)
-                {
-                    continue;
-                }
-
-                if (document.panelSettings != null)
-                {
-                    return document.panelSettings;
-                }
-            }
-
-            UIDocument[] loadedDocuments = Resources.FindObjectsOfTypeAll<UIDocument>();
-            for (int i = 0; i < loadedDocuments.Length; i++)
-            {
-                UIDocument document = loadedDocuments[i];
-                if (document == null || document == _document)
-                {
-                    continue;
-                }
-
-                if (document.panelSettings != null)
-                {
-                    return document.panelSettings;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// 利用可能な ThemeStyleSheet を解決する。
-        /// </summary>
-        private ThemeStyleSheet TryResolveThemeStyleSheet()
-        {
-            ThemeStyleSheet[] loadedThemes = Resources.FindObjectsOfTypeAll<ThemeStyleSheet>();
-            if (loadedThemes != null && loadedThemes.Length > 0)
-            {
-                return loadedThemes[0];
-            }
-
-#if UNITY_EDITOR
-            string[] priorityPaths = new[]
-            {
-                "Assets/UI Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss",
-                "Packages/com.unity.ui/PackageResources/StyleSheets/Generated/DefaultCommonDark.tss",
-                "Packages/com.unity.ui/PackageResources/StyleSheets/Generated/DefaultCommonLight.tss",
-            };
-
-            for (int i = 0; i < priorityPaths.Length; i++)
-            {
-                ThemeStyleSheet theme = UnityEditor.AssetDatabase.LoadAssetAtPath<ThemeStyleSheet>(priorityPaths[i]);
-                if (theme != null)
-                {
-                    return theme;
-                }
-            }
-
-            string[] themeGuids = UnityEditor.AssetDatabase.FindAssets("t:ThemeStyleSheet");
-            for (int i = 0; i < themeGuids.Length; i++)
-            {
-                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(themeGuids[i]);
-                ThemeStyleSheet theme = UnityEditor.AssetDatabase.LoadAssetAtPath<ThemeStyleSheet>(assetPath);
-                if (theme != null)
-                {
-                    return theme;
-                }
-            }
-#endif
-
-            return null;
+            _document = SettingsUiCommon.EnsureDocument(this);
         }
 
         /// <summary>
@@ -246,47 +141,15 @@ namespace Unage
             root.Clear();
             root.style.flexGrow = 1f;
 
-            _settingsLauncherButton = new Button(OnSettingsLauncherClicked);
-            _settingsLauncherButton.text = "設定";
-            _settingsLauncherButton.style.position = Position.Absolute;
-            _settingsLauncherButton.style.left = 10f;
-            _settingsLauncherButton.style.top = 10f;
-            _settingsLauncherButton.style.width = 60f;
-            _settingsLauncherButton.style.height = 30f;
+            _settingsLauncherButton = SettingsUiCommon.CreateLauncherButton("トリガー", OnSettingsLauncherClicked, 10f);
             root.Add(_settingsLauncherButton);
+            _environmentLauncherButton = SettingsUiCommon.CreateLauncherButton("環境", OnEnvironmentSettingsClicked, 10f);
+            _environmentLauncherButton.style.top = 46f;
+            root.Add(_environmentLauncherButton);
 
-            _windowRoot = new VisualElement();
-            _windowRoot.style.position = Position.Absolute;
-            _windowRoot.style.left = Length.Percent(8);
-            _windowRoot.style.top = Length.Percent(8);
-            _windowRoot.style.width = Length.Percent(84);
-            _windowRoot.style.height = Length.Percent(84);
-            _windowRoot.style.backgroundColor = Color.white;
-            _windowRoot.style.color = Color.black;
-            _windowRoot.style.borderBottomColor = Color.gray;
-            _windowRoot.style.borderTopColor = Color.gray;
-            _windowRoot.style.borderLeftColor = Color.gray;
-            _windowRoot.style.borderRightColor = Color.gray;
-            _windowRoot.style.borderBottomWidth = 1f;
-            _windowRoot.style.borderTopWidth = 1f;
-            _windowRoot.style.borderLeftWidth = 1f;
-            _windowRoot.style.borderRightWidth = 1f;
-            _windowRoot.style.paddingLeft = 8f;
-            _windowRoot.style.paddingRight = 8f;
-            _windowRoot.style.paddingTop = 8f;
-            _windowRoot.style.paddingBottom = 8f;
-            root.Add(_windowRoot);
-
-            Label title = new Label("イベント設定");
-            title.style.unityFontStyleAndWeight = FontStyle.Bold;
-            title.style.fontSize = 18;
-            title.style.marginBottom = 8f;
-            _windowRoot.Add(title);
-
-            VisualElement body = new VisualElement();
-            body.style.flexDirection = FlexDirection.Row;
-            body.style.flexGrow = 1f;
-            _windowRoot.Add(body);
+            SettingsUiCommon.WindowElements window = SettingsUiCommon.CreateWindow(root, "イベント設定", 1f);
+            _windowRoot = window.WindowRoot;
+            VisualElement body = window.Body;
 
             VisualElement leftPane = new VisualElement();
             leftPane.style.width = Length.Percent(55);
@@ -307,89 +170,24 @@ namespace Unage
             _editorView.style.flexGrow = 1f;
             body.Add(_editorView);
 
-            VisualElement footer = new VisualElement();
-            footer.style.flexDirection = FlexDirection.Row;
-            footer.style.justifyContent = Justify.FlexEnd;
-            footer.style.marginTop = 8f;
-            _windowRoot.Add(footer);
-
             Button saveButton = new Button(OnSaveClicked);
             saveButton.text = "保存";
             saveButton.style.width = 96f;
             saveButton.style.marginRight = 6f;
-            footer.Add(saveButton);
+            window.Footer.Add(saveButton);
 
             Button closeButton = new Button(OnCloseClicked);
             closeButton.text = "閉じる";
             closeButton.style.width = 96f;
-            footer.Add(closeButton);
+            window.Footer.Add(closeButton);
 
-            BuildModal(root);
-        }
-
-        /// <summary>
-        /// 汎用確認モーダルを構築する。
-        /// </summary>
-        private void BuildModal(VisualElement root)
-        {
-            _modalOverlay = new VisualElement();
-            _modalOverlay.style.position = Position.Absolute;
-            _modalOverlay.style.left = 0f;
-            _modalOverlay.style.top = 0f;
-            _modalOverlay.style.right = 0f;
-            _modalOverlay.style.bottom = 0f;
-            _modalOverlay.style.backgroundColor = new Color(0f, 0f, 0f, 0.4f);
-            root.Add(_modalOverlay);
-
-            VisualElement modalPanel = new VisualElement();
-            modalPanel.style.position = Position.Absolute;
-            modalPanel.style.left = Length.Percent(32);
-            modalPanel.style.top = Length.Percent(36);
-            modalPanel.style.width = Length.Percent(36);
-            modalPanel.style.height = 140f;
-            modalPanel.style.backgroundColor = Color.white;
-            modalPanel.style.color = Color.black;
-            modalPanel.style.borderBottomColor = Color.gray;
-            modalPanel.style.borderTopColor = Color.gray;
-            modalPanel.style.borderLeftColor = Color.gray;
-            modalPanel.style.borderRightColor = Color.gray;
-            modalPanel.style.borderBottomWidth = 1f;
-            modalPanel.style.borderTopWidth = 1f;
-            modalPanel.style.borderLeftWidth = 1f;
-            modalPanel.style.borderRightWidth = 1f;
-            modalPanel.style.paddingLeft = 10f;
-            modalPanel.style.paddingRight = 10f;
-            modalPanel.style.paddingTop = 10f;
-            modalPanel.style.paddingBottom = 10f;
-            _modalOverlay.Add(modalPanel);
-
-            _modalMessageLabel = new Label();
-            _modalMessageLabel.style.whiteSpace = WhiteSpace.Normal;
-            _modalMessageLabel.style.flexGrow = 1f;
-            modalPanel.Add(_modalMessageLabel);
-
-            VisualElement buttons = new VisualElement();
-            buttons.style.flexDirection = FlexDirection.Row;
-            buttons.style.justifyContent = Justify.FlexEnd;
-            modalPanel.Add(buttons);
-            _modalButtonsContainer = buttons;
-
-            _modalYesButton = new Button(OnModalYesClicked);
-            _modalYesButton.text = "はい";
-            _modalYesButton.style.width = 70f;
-            _modalYesButton.style.marginRight = 6f;
-            buttons.Add(_modalYesButton);
-
-            _modalNoButton = new Button(OnModalNoClicked);
-            _modalNoButton.text = "いいえ";
-            _modalNoButton.style.width = 70f;
-            _modalNoButton.style.marginRight = 6f;
-            buttons.Add(_modalNoButton);
-
-            _modalCancelButton = new Button(OnModalCancelClicked);
-            _modalCancelButton.text = "キャンセル";
-            _modalCancelButton.style.width = 100f;
-            buttons.Add(_modalCancelButton);
+            SettingsUiCommon.ModalElements modal = SettingsUiCommon.CreateModal(root, OnModalYesClicked, OnModalNoClicked, OnModalCancelClicked);
+            _modalOverlay = modal.Overlay;
+            _modalMessageLabel = modal.MessageLabel;
+            _modalButtonsContainer = modal.ButtonsContainer;
+            _modalYesButton = modal.YesButton;
+            _modalNoButton = modal.NoButton;
+            _modalCancelButton = modal.CancelButton;
 
             HideModal();
         }
@@ -466,6 +264,21 @@ namespace Unage
 
             RefreshTriggerList();
             RefreshEditor();
+        }
+
+        /// <summary>
+        /// 環境設定画面を開く。
+        /// </summary>
+        private void OnEnvironmentSettingsClicked()
+        {
+            EnvironmentSettingsUIManager manager = UnityEngine.Object.FindFirstObjectByType<EnvironmentSettingsUIManager>();
+            if (manager == null)
+            {
+                GameObject managerObject = new GameObject("EnvironmentSettingsUIManager");
+                manager = managerObject.AddComponent<EnvironmentSettingsUIManager>();
+            }
+
+            manager.OpenWindow();
         }
 
         /// <summary>
@@ -942,15 +755,7 @@ namespace Unage
         /// </summary>
         private void ApplyTextFieldStyle(TextField field)
         {
-            field.style.color = Color.black;
-            field.style.unityTextAlign = TextAnchor.MiddleLeft;
-
-            VisualElement input = field.Q("unity-text-input");
-            if (input != null)
-            {
-                input.style.color = Color.black;
-                input.style.backgroundColor = Color.white;
-            }
+            SettingsUiCommon.ApplyTextFieldStyle(field);
         }
 
         /// <summary>
@@ -1381,6 +1186,7 @@ namespace Unage
         private void UpdateVisibility()
         {
             _settingsLauncherButton.style.display = _isSettingsButtonVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            _environmentLauncherButton.style.display = _isSettingsButtonVisible ? DisplayStyle.Flex : DisplayStyle.None;
             _windowRoot.style.display = _isWindowVisible ? DisplayStyle.Flex : DisplayStyle.None;
         }
 

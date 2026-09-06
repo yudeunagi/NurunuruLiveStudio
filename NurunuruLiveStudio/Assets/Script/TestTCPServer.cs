@@ -30,6 +30,9 @@ public class TestTCPServer : MonoBehaviour
     //転送するポート番号
     [SerializeField]
     private int sendPortNumber = 50001;
+    //棒読みちゃんへ転送するか
+    [SerializeField]
+    private bool isTransport = true;
 
     private TcpListener myListener;
     private TcpClient myClient;
@@ -46,12 +49,49 @@ public class TestTCPServer : MonoBehaviour
 
     //イベントマネージャ
     private EventManager eventManager;
+    //環境設定データ
+    private EnvironmentConfigData environmentConfigData;
 
     void Start()
     {
         trigger = _Managers.GetComponent<TriggerManager>();
         eventManager = _Managers.GetComponent<EventManager>();
+        ResolveEnvironmentConfigData();
+        ApplyEnvironmentConfig(environmentConfigData);
         StartServer();
+    }
+
+    /// <summary>
+    /// 環境設定データ参照を解決する。
+    /// </summary>
+    private void ResolveEnvironmentConfigData()
+    {
+        if (environmentConfigData != null)
+        {
+            return;
+        }
+
+        environmentConfigData = UnityEngine.Object.FindFirstObjectByType<EnvironmentConfigData>();
+        if (environmentConfigData == null)
+        {
+            Debug.LogWarning("EnvironmentConfigData が見つからないため、既定のポート設定を使用します。");
+        }
+    }
+
+    /// <summary>
+    /// 環境設定を TCP サーバー設定へ反映する。
+    /// </summary>
+    public void ApplyEnvironmentConfig(EnvironmentConfigData configData)
+    {
+        if (configData == null)
+        {
+            return;
+        }
+
+        environmentConfigData = configData;
+        myPortNumber = configData.MyPortNumber;
+        sendPortNumber = configData.SendPortNumber;
+        isTransport = configData.IsTransport;
     }
 
     // ソケット接続準備、待機
@@ -109,7 +149,10 @@ public class TestTCPServer : MonoBehaviour
             header.CopyTo(sendByte, 0);
             bs.CopyTo(sendByte, header.Length);
             //棒読みちゃんへ送信
-            sendMessage(sendByte);
+            if (isTransport)
+            {
+                sendMessage(sendByte);
+            }
 
             //本文取得
             string message = System.Text.Encoding.UTF8.GetString(bs);
