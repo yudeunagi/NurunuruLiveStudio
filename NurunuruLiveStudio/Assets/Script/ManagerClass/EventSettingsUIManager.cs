@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using SFB;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -371,6 +370,7 @@ namespace Unage
             VisualElement row = new VisualElement();
             row.style.flexDirection = FlexDirection.Row;
             row.style.marginBottom = 4f;
+            int triggerIndex = _editingTriggerDatas.IndexOf(trigger);
 
             string summary = trigger.EventType == TriggerData.EVENT_TYPE.Amount
                 ? trigger.Amount.ToString("0", CultureInfo.InvariantCulture)
@@ -421,7 +421,68 @@ namespace Unage
             deleteButton.style.marginLeft = 4f;
             row.Add(deleteButton);
 
+            Button moveUpButton = new Button(delegate
+            {
+                MoveTriggerUp(trigger);
+            });
+            moveUpButton.text = "↑";
+            moveUpButton.style.width = 30f;
+            moveUpButton.style.marginLeft = 4f;
+            moveUpButton.SetEnabled(triggerIndex > 0);
+            row.Add(moveUpButton);
+
+            Button moveDownButton = new Button(delegate
+            {
+                MoveTriggerDown(trigger);
+            });
+            moveDownButton.text = "↓";
+            moveDownButton.style.width = 30f;
+            moveDownButton.style.marginLeft = 4f;
+            moveDownButton.SetEnabled(triggerIndex >= 0 && triggerIndex < _editingTriggerDatas.Count - 1);
+            row.Add(moveDownButton);
+
             return row;
+        }
+
+        /// <summary>
+        /// 指定トリガーを1つ上へ移動する。
+        /// </summary>
+        private void MoveTriggerUp(TriggerData trigger)
+        {
+            int index = _editingTriggerDatas.IndexOf(trigger);
+            if (index <= 0)
+            {
+                return;
+            }
+
+            SwapTriggers(index, index - 1);
+        }
+
+        /// <summary>
+        /// 指定トリガーを1つ下へ移動する。
+        /// </summary>
+        private void MoveTriggerDown(TriggerData trigger)
+        {
+            int index = _editingTriggerDatas.IndexOf(trigger);
+            if (index < 0 || index >= _editingTriggerDatas.Count - 1)
+            {
+                return;
+            }
+
+            SwapTriggers(index, index + 1);
+        }
+
+        /// <summary>
+        /// トリガーリスト内の2要素を入れ替えて再描画する。
+        /// </summary>
+        private void SwapTriggers(int fromIndex, int toIndex)
+        {
+            TriggerData temp = _editingTriggerDatas[fromIndex];
+            _editingTriggerDatas[fromIndex] = _editingTriggerDatas[toIndex];
+            _editingTriggerDatas[toIndex] = temp;
+            _isDirty = true;
+            RefreshTriggerList();
+            RefreshEditor();
         }
 
         /// <summary>
@@ -1096,17 +1157,22 @@ namespace Unage
         /// </summary>
         private bool TrySelectImagePath(out string selectedPath)
         {
-            // 拡張子フィルタを設定する
-            var extensions = new [] {
-                new ExtensionFilter("Image Files", "png", "jpg", "jpeg" ),
-                new ExtensionFilter("All Files", "*" ),
-            };
-            // ファイル選択ダイアログを開く
-            var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, true);
-            // 選択されたファイルのパスを取得する
-            selectedPath = (paths != null && paths.Length > 0) ? paths[0] : string.Empty;
+#if UNITY_EDITOR
+            selectedPath = UnityEditor.EditorUtility.OpenFilePanel("画像ファイルを選択", "", "png,jpg,jpeg");
             return !string.IsNullOrEmpty(selectedPath);
+#elif UNITY_STANDALONE_WIN
+            if (RuntimeFileDialog.TrySelectImageFile(out selectedPath))
+            {
+                return true;
+            }
 
+            selectedPath = string.Empty;
+            return false;
+#else
+            selectedPath = string.Empty;
+            Debug.LogWarning("ファイル選択ダイアログはこのプラットフォームでは未対応です。");
+            return false;
+#endif
         }
 
         /// <summary>
