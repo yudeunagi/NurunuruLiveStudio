@@ -101,11 +101,9 @@ namespace Unage
                     continue;
                 }
 
-                Debug.Log($"設定情報の金額={tri.Amount}");
                 //入力された金額が設定情報の金額以上＆最大金額の場合、設定されたイベント名を返す
                 if(decimal.Compare(amount, tri.Amount) >= 0 && tri.Amount >= maxAmount)
                 {
-                    Debug.Log($"入力された金額={amount} は設定情報の金額={tri.Amount} 以上です。");
                     maxAmount = tri.Amount;
                     resultEventList = tri.EventList;
                 }
