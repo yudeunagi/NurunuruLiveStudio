@@ -107,7 +107,7 @@ namespace Unage
             root.Clear();
             root.style.flexGrow = 1f;
 
-            SettingsUiCommon.WindowElements window = SettingsUiCommon.CreateWindow(root, "環境設定", 0.9f);
+            SettingsUiCommon.WindowElements window = SettingsUiCommon.CreateWindow(root, "環境設定", 0.6f);
             _windowRoot = window.WindowRoot;
             window.Body.style.flexDirection = FlexDirection.Column;
 

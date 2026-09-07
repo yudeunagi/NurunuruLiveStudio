@@ -147,7 +147,7 @@ namespace Unage
             _environmentLauncherButton.style.top = 46f;
             root.Add(_environmentLauncherButton);
 
-            SettingsUiCommon.WindowElements window = SettingsUiCommon.CreateWindow(root, "イベント設定", 1f);
+            SettingsUiCommon.WindowElements window = SettingsUiCommon.CreateWindow(root, "イベント設定", 0.6f);
             _windowRoot = window.WindowRoot;
             VisualElement body = window.Body;
 
