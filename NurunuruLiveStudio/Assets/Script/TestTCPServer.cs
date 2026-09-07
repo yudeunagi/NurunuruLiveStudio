@@ -53,11 +53,17 @@ public class TestTCPServer : MonoBehaviour
     //環境設定データ
     private EnvironmentConfigData environmentConfigData;
 
+    // 棒読みちゃん送受信データのヘッダ長(byte
     private const int BOUYOMI_HEADER_LENGTH = 15;
+    // 棒読みちゃん送受信データのエンコーディング位置
     private const int BOUYOMI_ENCODING_OFFSET = 10;
+    // 棒読みちゃん送受信データの文字列の長さを表すbyte位置
     private const int BOUYOMI_BODY_LENGTH_OFFSET = 11;
+    // クライアント受信タイムアウト時間 (ミリ秒)
     private const int CLIENT_RECEIVE_TIMEOUT_MS = 10000;
+    // 最大メッセージ本文長(byte)
     private const int MAX_BODY_LENGTH_BYTES = 1024 * 1024;
+    // 棒読みちゃん連携接続タイムアウト時間 (ミリ秒) 
     private const int RELAY_CONNECT_TIMEOUT_MS = 3000;
 
     private int connectionSequence;
@@ -138,6 +144,7 @@ public class TestTCPServer : MonoBehaviour
     {
         isShuttingDown = false;
 
+        // TCP サーバーを開始する前に既存のリスナーがあれば停止する
         if (myListener != null)
         {
             myListener.Stop();
@@ -152,6 +159,9 @@ public class TestTCPServer : MonoBehaviour
         BeginAccept();
     }
 
+    /// <summary>
+    /// TCP クライアントからの接続を待機し、接続があった場合にコールバックを呼び出す。
+    /// </summary>
     private void BeginAccept()
     {
         if (isShuttingDown || myListener == null)
@@ -165,14 +175,7 @@ public class TestTCPServer : MonoBehaviour
             myListener.BeginAcceptTcpClient(DoAcceptTcpClientCallback, myListener);
             LogVerbose("[TCP] Waiting for next connection...");
         }
-        catch (ObjectDisposedException)
-        {
-            if (!isShuttingDown)
-            {
-                Debug.LogWarning("[TCP] Listener is already disposed while waiting for connection.");
-            }
-        }
-        catch (InvalidOperationException e)
+        catch (Exception e)
         {
             if (!isShuttingDown)
             {
@@ -203,11 +206,6 @@ public class TestTCPServer : MonoBehaviour
             BeginAccept();
             acceptRearmed = true;
 
-            string remoteEndPoint = acceptedClient.Client.RemoteEndPoint != null
-                ? acceptedClient.Client.RemoteEndPoint.ToString()
-                : "(unknown)";
-            LogVerbose($"[TCP:{connectionId}] connect: {remoteEndPoint}");
-
             using (acceptedClient)
             using (NetworkStream stream = acceptedClient.GetStream())
             {
@@ -215,24 +213,29 @@ public class TestTCPServer : MonoBehaviour
 
                 byte[] header = new byte[BOUYOMI_HEADER_LENGTH];
                 int messageId = 1;
+                // ヘッダーを読み取る
                 int headerBytesRead = ReadExact(stream, header, 0, BOUYOMI_HEADER_LENGTH);
                 if (headerBytesRead == 0)
                 {
+                    // ヘッダーが読み取れなかった場合は切断されたとみなす
                     LogVerbose($"[TCP:{connectionId}] disconnect by remote before header.");
                     return;
                 }
 
+                // ヘッダーが不完全な場合は切断されたとみなす
                 if (headerBytesRead < BOUYOMI_HEADER_LENGTH)
                 {
                     Debug.LogWarning($"[TCP:{connectionId}] Incomplete header. expected={BOUYOMI_HEADER_LENGTH}, actual={headerBytesRead}");
                     return;
                 }
 
+                // エンコーディングタイプを取得
                 byte encodingType = header[BOUYOMI_ENCODING_OFFSET];
 
                 //本文の長さ
                 int len = BitConverter.ToInt32(header, BOUYOMI_BODY_LENGTH_OFFSET);
 
+                // 本文の長さが妥当かチェック
                 if (len < 0 || len > MAX_BODY_LENGTH_BYTES)
                 {
                     Debug.LogError($"[TCP:{connectionId}|msg:{messageId}] Invalid body length: {len}");
@@ -248,6 +251,7 @@ public class TestTCPServer : MonoBehaviour
                     return;
                 }
 
+                // メッセージをデコード
                 string message = DecodeMessage(bs, encodingType);
 
                 LogVerbose($"[TCP:{connectionId}|msg:{messageId}] received header={BOUYOMI_HEADER_LENGTH} body={len} encoding={encodingType}");
@@ -259,6 +263,7 @@ public class TestTCPServer : MonoBehaviour
                 header.CopyTo(sendByte, 0);
                 bs.CopyTo(sendByte, header.Length);
 
+                // 受信したメッセージをキューに追加
                 EnqueueReceivedMessage(connectionId, messageId, message);
                 LogVerbose($"[TCP:{connectionId}|msg:{messageId}] queued for main-thread processing.");
 
@@ -275,19 +280,11 @@ public class TestTCPServer : MonoBehaviour
                 }
             }
         }
-        catch (IOException e)
+        catch (ObjectDisposedException e)
         {
-            if (isShuttingDown || IsExpectedShutdownIo(e))
+            if (!isShuttingDown)
             {
-                LogVerbose($"[TCP:{connectionId}] IO interrupted by shutdown: {e.Message}");
-            }
-            else if (IsTimeoutIo(e))
-            {
-                Debug.LogWarning($"[TCP:{connectionId}] IO timeout while waiting data: {e.Message}");
-            }
-            else
-            {
-                Debug.LogError($"[TCP:{connectionId}] IO error: {e}");
+                Debug.LogWarning($"[TCP:{connectionId}] Listener/client disposed: {e.Message}");
             }
         }
         catch (Exception e)
@@ -303,6 +300,12 @@ public class TestTCPServer : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 受信したメッセージをメインスレッドで処理するためにキューに追加する。
+    /// </summary>
+    /// <param name="connectionId">接続ID</param>
+    /// <param name="messageId">メッセージID</param>
+    /// <param name="message">受信したメッセージ本文</param>
     private void EnqueueReceivedMessage(int connectionId, int messageId, string message)
     {
         ReceivedMessageContext context = new ReceivedMessageContext();
@@ -316,6 +319,10 @@ public class TestTCPServer : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// メインスレッドで受信したメッセージを処理する。
+    /// </summary>
+    /// <param name="context">受信したメッセージのコンテキスト</param>
     private void ProcessReceivedMessageOnMainThread(ReceivedMessageContext context)
     {
         if (context == null)
@@ -323,40 +330,21 @@ public class TestTCPServer : MonoBehaviour
             return;
         }
 
-        if (trigger == null || eventManager == null)
-        {
-            Debug.LogError($"[TCP:{context.ConnectionId}|msg:{context.MessageId}] TriggerManager/EventManager is not assigned.");
-            return;
-        }
-
         LogVerbose($"[TCP:{context.ConnectionId}|msg:{context.MessageId}] start trigger/equeue processing (main thread).");
 
-        // その他いろいろな処理
         // 金額からイベント名取得
         List<EventData> moneyEventList = trigger.getAmount(context.Message);
         // 単語からイベント名取得
         List<EventData> triggerEventList = trigger.Trigger(context.Message);
 
-        int moneyEventCount = moneyEventList != null ? moneyEventList.Count : -1;
-        int triggerEventCount = triggerEventList != null ? triggerEventList.Count : -1;
-        LogVerbose($"[TCP:{context.ConnectionId}|msg:{context.MessageId}] enqueue events money={moneyEventCount}, word={triggerEventCount}");
-
+        // イベントをキューに追加
         if (moneyEventList != null)
         {
             eventManager.enqueEvent(moneyEventList);
         }
-        else
-        {
-            Debug.LogWarning($"[TCP:{context.ConnectionId}|msg:{context.MessageId}] moneyEventList is null.");
-        }
-
         if (triggerEventList != null)
         {
             eventManager.enqueEvent(triggerEventList);
-        }
-        else
-        {
-            Debug.LogWarning($"[TCP:{context.ConnectionId}|msg:{context.MessageId}] triggerEventList is null.");
         }
 
         LogVerbose($"[TCP:{context.ConnectionId}|msg:{context.MessageId}] event enqueue done (main thread).");
@@ -373,6 +361,14 @@ public class TestTCPServer : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// 指定されたストリームから指定されたバイト数を読み取ります。
+    /// </summary>
+    /// <param name="stream">読み取る対象のストリーム</param>
+    /// <param name="buffer">読み取り先のバイト配列</param>
+    /// <param name="offset">読み取り開始位置のオフセット</param>
+    /// <param name="count">読み取るバイト数</param>
+    /// <returns>実際に読み取ったバイト数</returns>
     private int ReadExact(Stream stream, byte[] buffer, int offset, int count)
     {
         int totalRead = 0;
@@ -391,29 +387,10 @@ public class TestTCPServer : MonoBehaviour
         return totalRead;
     }
 
-    private bool IsTimeoutIo(IOException e)
-    {
-        SocketException socketException = e.InnerException as SocketException;
-        if (socketException == null)
-        {
-            return false;
-        }
-
-        return socketException.SocketErrorCode == SocketError.TimedOut;
-    }
-
-    private bool IsExpectedShutdownIo(IOException e)
-    {
-        SocketException socketException = e.InnerException as SocketException;
-        if (socketException == null)
-        {
-            return false;
-        }
-
-        return socketException.SocketErrorCode == SocketError.Interrupted
-            || socketException.SocketErrorCode == SocketError.OperationAborted;
-    }
-
+    /// <summary>
+    /// デバッグ用メソッド、ログ出力設定を参照しログを出力します。
+    /// </summary>
+    /// <param name="message">出力する詳細ログのメッセージ</param>
     private void LogVerbose(string message)
     {
         if (enableVerboseTcpLog)
